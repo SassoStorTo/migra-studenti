@@ -1,4 +1,4 @@
-package tables
+package majors
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
 )
 
-func QueryCreateMajors() string {
+func QueryCreate() string {
 	return `
 		CREATE TABLE IF NOT EXISTS Majors (
 			Id SERIAL PRIMARY KEY,
@@ -16,7 +16,7 @@ func QueryCreateMajors() string {
 	`
 }
 
-func GetAllMajors() *[]models.Majors {
+func GetAll() *[]models.Majors {
 	rows, err := database.DB.Query(`SELECT (Id, Name) FROM majors;`)
 
 	if err != nil {

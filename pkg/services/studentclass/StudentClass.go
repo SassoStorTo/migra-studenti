@@ -1,4 +1,4 @@
-package tables
+package studentclass
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
 )
 
-func QueryCreateStudentClass() string {
+func QueryCreate() string {
 	return `
 		CREATE TABLE IF NOT EXISTS StudentClass (
 			IdS INT,
@@ -19,8 +19,8 @@ func QueryCreateStudentClass() string {
 		);`
 }
 
-func CreateTableStudentClass() {
-	_, err := database.DB.Exec(QueryCreateClasses())
+func CreateTableStudentClass() { //Todo: chek if it's really used
+	_, err := database.DB.Exec(QueryCreate())
 
 	if err != nil {
 		log.Panic(err)

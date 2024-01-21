@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/SassoStorTo/studenti-italici/api/database"
@@ -78,6 +79,35 @@ func (c Class) Update() error {
 
 	if num != 1 {
 		log.Panicf("Wrong number of affected rows [%d]", num)
+	}
+
+	return nil
+}
+
+func (c Class) Delete() error {
+	if c.Id == -1 {
+		return errors.New("[Class] Delete: for deleteings in the db the Id must be set")
+	}
+
+	err := StudentClass{IdC: c.Id}.Delete()
+	if err != nil {
+		return err
+	}
+
+	res, err := database.DB.Exec(`
+		DELETE FROM classes
+		WHERE id = ($1);`, c.Id)
+	if err != nil {
+		return err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if num != 1 {
+		return fmt.Errorf("[Class] Save: wrong number of affected rows [%d]", num)
 	}
 
 	return nil

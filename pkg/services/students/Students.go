@@ -1,6 +1,6 @@
-package tables
+package students
 
-func QueryCreateStudents() string {
+func QueryCreate() string {
 	return `
 		CREATE TABLE IF NOT EXISTS Students (
 			Id SERIAL PRIMARY KEY,

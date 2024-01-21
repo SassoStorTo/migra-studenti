@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -22,7 +23,7 @@ func (s StudentClass) Save() error {
 		INSERT INTO StudentClass
 		(IdS, IdC, CreationDate)
 		VALUES
-		(($1), ($2), ($3));`, s.IdS, s.IdC, FormatTimeForDb(s.CreationDate))
+		(($1), ($2), ($3));`, s.IdS, s.IdC, database.FormatTimeForDb(s.CreationDate))
 
 	if err != nil {
 		log.Panic(err.Error())
@@ -38,4 +39,29 @@ func (s StudentClass) Save() error {
 	}
 
 	return nil
+}
+
+func (s StudentClass) Delete() error {
+	if s.IdS <= 0 && s.IdC <= 0 {
+		return errors.New("[StudentClass] Delete: for deleteings in the db at " +
+			"least one Id must be set")
+	}
+
+	if s.IdS <= 0 {
+		_, err := database.DB.Exec(`
+		DELETE FROM studentclass
+		WHERE IdC = ($1);`, s.IdC)
+		return err
+	}
+	if s.IdC <= 0 {
+		_, err := database.DB.Exec(`
+		DELETE FROM studentclass
+		WHERE IdS = ($1);`, s.IdS)
+		return err
+	}
+
+	_, err := database.DB.Exec(`
+	DELETE FROM studentclass
+	WHERE IdC = ($1) AND IdS = ($2);`, s.IdC, s.IdS)
+	return err
 }

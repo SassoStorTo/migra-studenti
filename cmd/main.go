@@ -6,7 +6,7 @@ import (
 
 	"github.com/SassoStorTo/studenti-italici/api/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services"
+	dbutils "github.com/SassoStorTo/studenti-italici/pkg/services/databaseutils"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	services.Reset()
-	services.SetupDb()
+	dbutils.Reset()
+	dbutils.SetupDb()
 
 	class := models.NewClass(5, "I", 2023, 1)
 	err = class.Save()
@@ -38,6 +38,22 @@ func main() {
 	(*class).Section = "tre"
 	(*class).Id = 1
 	(*class).Update()
+
+	major := models.Majors{Id: 1}
+	err = major.Delete()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// err = e.Delete()
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
+
+	// err = (*class).Delete()
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
 
 	//////////////////
 
