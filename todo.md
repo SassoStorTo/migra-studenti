@@ -16,8 +16,9 @@
     ~~- major~~
     ~~- studentclass~~
 
+- integrare login google
 - aggiungere users
-
+- mettere funzioni sotto routingz
 
 
 
