@@ -9,13 +9,14 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o za-wardo
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./build/main ./cmd/main.go 
 
 # Expose the port that the application will run on
 EXPOSE 8080
 
 # Command to run the application
-CMD ["./za-wardo"]
+# CMD ["./build/main"]
+CMD ["air"]
