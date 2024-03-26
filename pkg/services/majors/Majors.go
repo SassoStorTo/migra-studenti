@@ -1,10 +1,14 @@
 package majors
 
 import (
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/gofiber/fiber/v2"
 )
 
 func QueryCreate() string {
@@ -35,4 +39,45 @@ func GetAll() *[]models.Majors {
 	}
 
 	return &data
+}
+
+func Create(c *fiber.Ctx) error {
+	fmt.Print("Major Create\n")
+
+	name := strings.TrimSpace(c.FormValue("name"))
+	if name == "" {
+		return fmt.Errorf("[Classes] Create: name field empty")
+	}
+
+	s := models.NewMajor(name)
+	return s.Save()
+}
+
+func Delete(c *fiber.Ctx) error {
+	fmt.Print("Major Delete\n")
+
+	id, err := strconv.Atoi(c.FormValue("id"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Delete: id field incorrect")
+	}
+
+	s := &models.Majors{Id: id}
+	return s.Delete()
+}
+
+func Edit(c *fiber.Ctx) error {
+	fmt.Print("Major Edit\n")
+
+	name := strings.TrimSpace(c.FormValue("name"))
+	if name == "" {
+		return fmt.Errorf("[Classes] Edit: name field empty")
+	}
+
+	id, err := strconv.Atoi(c.FormValue("id"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Edit: id field incorrect")
+	}
+
+	s := &models.Majors{Id: id, Name: name}
+	return s.Update()
 }

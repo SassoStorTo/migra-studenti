@@ -1,10 +1,14 @@
 package classes
 
 import (
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/gofiber/fiber/v2"
 )
 
 func QueryCreate() string {
@@ -19,7 +23,7 @@ func QueryCreate() string {
 		);`
 }
 
-func GetById(id int) *models.Class {
+func GetById(id int) *models.Class { //Todo: change name - usa bene il next
 	rows, err := database.DB.Query(`SELECT (Id, Year, Section, ScholarYearStart, IdMajor) 
 		FROM majors;`)
 	if err != nil {
@@ -58,4 +62,69 @@ func GetAll() *[]models.Class {
 	}
 
 	return &data
+}
+
+func Create(c *fiber.Ctx) error {
+	fmt.Print("Class Create\n")
+
+	year, err := strconv.Atoi(c.FormValue("year"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: year incorrect")
+	}
+	section := strings.TrimSpace(c.FormValue("section"))
+	if section == "" {
+		return fmt.Errorf("[Classes] Create: section empty")
+	}
+	schoolyear, err := strconv.Atoi(c.FormValue("schoolyear"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: schoolyear incorrect")
+	}
+	idMajor, err := strconv.Atoi(c.FormValue("idmajor"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: major id incorrect")
+	}
+
+	s := models.NewClass(year, section, schoolyear, idMajor)
+	return s.Save()
+}
+func Delete(c *fiber.Ctx) error {
+	fmt.Print("Class Delete\n")
+
+	id, err := strconv.Atoi(c.FormValue("id"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: id field incorrect")
+	}
+
+	s := models.Class{Id: id}
+	return s.Delete()
+}
+
+func Edit(c *fiber.Ctx) error {
+	fmt.Print("Class Edit\n")
+
+	id, err := strconv.Atoi(c.FormValue("id"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: id field incorrect")
+	}
+
+	year, err := strconv.Atoi(c.FormValue("year"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: year incorrect")
+	}
+	section := strings.TrimSpace(c.FormValue("section"))
+	if section == "" {
+		return fmt.Errorf("[Classes] Create: section empty")
+	}
+	schoolyear, err := strconv.Atoi(c.FormValue("schoolyear"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: schoolyear incorrect")
+	}
+	idMajor, err := strconv.Atoi(c.FormValue("idmajor"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: major id incorrect")
+	}
+
+	s := &models.Class{Id: id, Year: year, Section: section,
+		ScholarYearStart: schoolyear, IdMajor: idMajor}
+	return s.Update()
 }

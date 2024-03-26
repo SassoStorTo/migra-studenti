@@ -1,10 +1,14 @@
 package studentclass
 
 import (
+	"fmt"
 	"log"
+	"strconv"
+	"time"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/gofiber/fiber/v2"
 )
 
 func QueryCreate() string {
@@ -46,4 +50,35 @@ func GetAllStudentClass() *[]models.Class {
 	}
 
 	return &data
+}
+
+func Create(c *fiber.Ctx) error {
+	fmt.Print("student-class Create\n")
+
+	ids, err := strconv.Atoi(c.FormValue("ids"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: ids field incorrect")
+	}
+	idc, err := strconv.Atoi(c.FormValue("idc"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Create: idc field incorrect")
+	}
+
+	s := models.NewStudentClass(ids, idc, time.Now())
+	return s.Save()
+}
+func Delete(c *fiber.Ctx) error {
+	fmt.Print("student-class Delete\n")
+
+	ids, err := strconv.Atoi(c.FormValue("ids"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Delete: ids field incorrect")
+	}
+	idc, err := strconv.Atoi(c.FormValue("idc"))
+	if err != nil {
+		return fmt.Errorf("[Classes] Delete: idc field incorrect")
+	}
+
+	s := models.StudentClass{IdS: ids, IdC: idc}
+	return s.Delete()
 }
