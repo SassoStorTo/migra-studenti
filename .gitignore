@@ -22,3 +22,6 @@ go.work
 /build
 
 *.conf
+*.env
+
+.env

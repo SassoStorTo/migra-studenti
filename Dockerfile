@@ -1,22 +1,8 @@
-# Use Golang official image as the base image
 FROM golang:latest
 
-# Set the working directory inside the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy the Go project files into the container
-
-COPY go.mod go.sum ./
-RUN go mod download
+RUN go install github.com/cosmtrek/air@latest
 
 COPY . .
-
-# Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./build/main ./cmd/main.go 
-
-# Expose the port that the application will run on
-EXPOSE 8080
-
-# Command to run the application
-# CMD ["./build/main"]
-CMD ["air"]
+RUN go mod tidy
