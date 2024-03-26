@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 )
 
 type Class struct {
@@ -111,4 +111,28 @@ func (c Class) Delete() error {
 	}
 
 	return nil
+}
+
+func GetClassById(id int) *Class {
+	rows, err := database.DB.Query(`SELECT Id, Year, Section, ScholarYearStart, IdM
+									FROM classes WHERE Id = $1;`, id)
+
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil
+	}
+
+	var result Class
+	err = rows.Scan(&result.Id, &result.Year, &result.Section,
+		&result.ScholarYearStart, &result.IdMajor)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+
+	return &result
 }

@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 )
 
 type Student struct {
@@ -36,16 +36,16 @@ func (s Student) Save() error {
 		(($1), ($2), ($3));`, s.Name, s.LastName, database.FormatTimeForDb(s.DateOfBirth))
 
 	if err != nil {
-		log.Panic(err.Error())
+		return err
 	}
 
 	num, err := res.RowsAffected()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if num != 1 {
-		log.Panicf("Wrong number of affected rows [%d]", num)
+		return fmt.Errorf("wrong number of affected rows [%d]", num)
 	}
 
 	return nil
@@ -73,7 +73,7 @@ func (s Student) Update() error {
 	}
 
 	if num != 1 {
-		return fmt.Errorf("[Student] Save: wrong number of affected rows [%d]", num)
+		return fmt.Errorf("[Student] Update: wrong number of affected rows [%d]", num)
 	}
 
 	return nil
@@ -81,7 +81,7 @@ func (s Student) Update() error {
 
 func (s Student) Delete() error {
 	if s.Id == -1 {
-		return errors.New("[Student] Save: for deleteings in the db the Id must be set")
+		return errors.New("[Student] Delete: for deleteings in the db the Id must be set")
 	}
 
 	err := StudentClass{IdS: s.Id}.Delete()
@@ -102,8 +102,30 @@ func (s Student) Delete() error {
 	}
 
 	if num != 1 {
-		return fmt.Errorf("[Student] Save: wrong number of affected rows [%d]", num)
+		return fmt.Errorf("[Student] Delete: wrong number of affected rows [%d]", num)
 	}
 
 	return nil
+}
+
+func GetStudentById(id int) *Student {
+	rows, err := database.DB.Query(`SELECT Id, Name, LastName, DateOfBirth FROM students WHERE Id = $1;`, id)
+
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil
+	}
+
+	var result Student
+	err = rows.Scan(&result.Id, &result.Name, &result.LastName, &result.DateOfBirth)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+
+	return &result
 }

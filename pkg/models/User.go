@@ -13,17 +13,19 @@ type User struct {
 	Email         string
 	Name          string
 	Hd            string
+	picture       string
 	VerifiedEmail bool
 	IsAdmin       bool
 	IsEditor      bool
 }
 
-func NewUser(email string, name string, hd string, verifiedEmail bool) *User {
+func NewUser(email string, name string, hd string, picture string, verifiedEmail bool) *User {
 	return &User{
 		Id:            -1,
 		Email:         email,
 		Name:          name,
 		Hd:            hd,
+		picture:       picture,
 		VerifiedEmail: verifiedEmail}
 }
 
@@ -38,16 +40,16 @@ func (u User) Save() error {
 		VALUES
 		(($1), ($2), ($3), ($4));`, u.Email, u.Name, u.Hd, u.VerifiedEmail)
 	if err != nil {
-		log.Panic(err.Error())
+		return err
 	}
 
 	num, err := res.RowsAffected()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if num != 1 {
-		log.Panicf("Wrong number of affected rows [%d]", num)
+		return fmt.Errorf("wrong number of affected rows [%d]", num)
 	}
 
 	return nil
@@ -107,5 +109,48 @@ func (u User) Delete() error {
 	}
 
 	return nil
+}
+
+func GetUserById(id int) (*User, error) {
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
+									FROM Users WHERE Id=$1;`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("id User non in db")
+	}
+	var result User
+	err = rows.Scan(&result.Id, &result.Name, &result.Email,
+		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor)
+	if err != nil {
+		log.Panic("rotto mentre lettura azzzz")
+	}
+
+	return &result, nil
+
+}
+
+func GetUserByEmail(email string) (*User, error) {
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
+									FROM Users WHERE Email=$1;`, email)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("email User non in db")
+	}
+	var result User
+	err = rows.Scan(&result.Id, &result.Name, &result.Email,
+		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor)
+	if err != nil {
+		log.Panic("rotto mentre lettura azzzz")
+	}
+
+	return &result, nil
 
 }

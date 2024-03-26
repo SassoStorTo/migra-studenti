@@ -3,9 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
-	"log"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 )
 
 type Majors struct { //Todo: change name to Major
@@ -29,15 +28,15 @@ func (m Majors) Save() error {
 		($1);`, m.Name)
 
 	if err != nil {
-		log.Panic(err.Error())
+		return err
 	}
 
 	num, err := res.RowsAffected()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 	if num != 1 {
-		log.Panicf("Wrong number of affected rows [%d]", num)
+		return fmt.Errorf("wrong number of affected rows [%d]", num)
 	}
 	return nil
 }
@@ -73,6 +72,33 @@ func (m Majors) Delete() error {
 		return fmt.Errorf("[Class] Save: wrong number of affected rows [%d]", num)
 	}
 	return nil
+}
+
+func (m Majors) Update() error {
+	if m.Id == -1 {
+		return errors.New("[Major] Save: for updateing in the db the Id must be set")
+	}
+
+	res, err := database.DB.Exec(`
+		UPDATE Majors
+		SET Name = ($2)
+		WHERE Id=($1);`, m.Id, m.Name)
+
+	if err != nil {
+		return err
+	}
+
+	num, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if num != 1 {
+		return fmt.Errorf("[Student] Update: wrong number of affected rows [%d]", num)
+	}
+
+	return nil
+
 }
 
 func (m Majors) getAssociatedClasses() (*[]Class, error) {

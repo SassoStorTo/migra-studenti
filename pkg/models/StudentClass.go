@@ -2,10 +2,10 @@ package models
 
 import (
 	"errors"
-	"log"
+	"fmt"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/api/database"
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 )
 
 type StudentClass struct {
@@ -19,6 +19,22 @@ func NewStudentClass(ids int, idc int, date time.Time) *StudentClass {
 }
 
 func (s StudentClass) Save() error {
+	if student := GetStudentById(s.IdS); student == nil {
+		return fmt.Errorf("the student does not exist")
+	}
+	if class := GetClassById(s.IdC); class == nil {
+		return fmt.Errorf("the class does not exist")
+	}
+
+	rows, err := database.DB.Query("SELECT * FROM studentclass WHERE IdS = $1 AND IdC = $2;", s.IdS, s.IdC)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return fmt.Errorf("the link already exist")
+	}
+
 	res, err := database.DB.Exec(`
 		INSERT INTO StudentClass
 		(IdS, IdC, CreationDate)
@@ -26,16 +42,16 @@ func (s StudentClass) Save() error {
 		(($1), ($2), ($3));`, s.IdS, s.IdC, database.FormatTimeForDb(s.CreationDate))
 
 	if err != nil {
-		log.Panic(err.Error())
+		return err
 	}
 
 	num, err := res.RowsAffected()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if num != 1 {
-		log.Panicf("Wrong number of affected rows [%d]", num)
+		return fmt.Errorf("wrong number of affected rows [%d]", num)
 	}
 
 	return nil
