@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/middlewares"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
@@ -86,10 +85,10 @@ func HandleCallback(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("the account is already created, wait to be approved")
+		return c.Redirect("/wait-accept")
 	}
 
-	return c.SendString("Successfully authenticated with Google, and created the account")
+	return c.Redirect("/")
 }
 
 func setRefreshCookie(user *models.User, c *fiber.Ctx) error {
@@ -99,7 +98,8 @@ func setRefreshCookie(user *models.User, c *fiber.Ctx) error {
 	}
 
 	time := time.Now().Add(time.Hour * 24 * 30 * 6) // 6 months
-	refresh_token, err := middlewares.NewToken(user.Id, user.IsAdmin, user.IsEditor, true, time)
+	// refresh_token, err := NewToken(user.Id, user.IsAdmin, user.IsEditor, true, time)
+	refresh_token, err := NewToken(user.Id, true, true, true, time)
 	if err != nil {
 		return err
 	}

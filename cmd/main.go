@@ -4,15 +4,15 @@ import (
 	"log"
 
 	"github.com/SassoStorTo/studenti-italici/pkg/database"
-	"github.com/SassoStorTo/studenti-italici/pkg/middlewares"
 	"github.com/SassoStorTo/studenti-italici/pkg/router"
 	dbutils "github.com/SassoStorTo/studenti-italici/pkg/services/databaseutils"
+	"github.com/SassoStorTo/studenti-italici/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
-	middlewares.InitStoreSess()
+	utils.InitStoreSess()
 	err := database.ConnectDB()
 	if err != nil {
 		log.Panic(err)
@@ -33,7 +33,7 @@ func main() {
 
 	router.SetUpRoutes(app)
 
-	app.Listen(":8080")
+	log.Fatal(app.Listen(":8080"))
 }
 
 // func srtupStuff() {

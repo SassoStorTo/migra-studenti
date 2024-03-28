@@ -130,7 +130,6 @@ func GetUserById(id int) (*User, error) {
 	}
 
 	return &result, nil
-
 }
 
 func GetUserByEmail(email string) (*User, error) {
@@ -152,5 +151,4 @@ func GetUserByEmail(email string) (*User, error) {
 	}
 
 	return &result, nil
-
 }
