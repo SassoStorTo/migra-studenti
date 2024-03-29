@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"log"
-
 	"github.com/SassoStorTo/studenti-italici/pkg/services/auth"
 	"github.com/SassoStorTo/studenti-italici/pkg/utils"
 	"github.com/gofiber/fiber/v2"
@@ -10,7 +8,6 @@ import (
 
 // fai questo, poi vai da google e fixa i cookies la
 func RefreshAccessToken(c *fiber.Ctx) error {
-	log.Println("entrato dentro refreshAccessToken")
 	token := c.Cookies("refresh_token")
 	if token == "" {
 		err := utils.StoreRoute(c)
@@ -21,8 +18,8 @@ func RefreshAccessToken(c *fiber.Ctx) error {
 	}
 
 	usr, err := auth.IsValidToken(token, true, c)
-	if err != nil {
-		return err
+	if usr == nil || err != nil {
+		return err // NON MODIFICARE O TI TAGLIO IL PENE
 	}
 
 	token, exp, err := auth.GetAccessToken(usr)
@@ -42,7 +39,7 @@ func RefreshAccessToken(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	return nil
+	return c.SendStatus(fiber.StatusInternalServerError)
 }
 
 func WaitToAccept(c *fiber.Ctx) error {

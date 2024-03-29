@@ -1,4 +1,4 @@
-package auth
+package handlers
 
 import (
 	"context"
@@ -9,9 +9,10 @@ import (
 	"io"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/SassoStorTo/studenti-italici/pkg/services/auth"
+
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -78,6 +79,9 @@ func HandleCallback(c *fiber.Ctx) error {
 		userData["hd"].(string), userData["picture"].(string),
 		userData["verified_email"].(bool))
 
+	user.IsEditor = true
+	user.IsAdmin = true
+
 	err = user.Save()
 
 	if e := setRefreshCookie(user, c); e != nil {
@@ -97,15 +101,13 @@ func setRefreshCookie(user *models.User, c *fiber.Ctx) error {
 		return err
 	}
 
-	time := time.Now().Add(time.Hour * 24 * 30 * 6) // 6 months
-	// refresh_token, err := NewToken(user.Id, user.IsAdmin, user.IsEditor, true, time)
-	refresh_token, err := NewToken(user.Id, true, true, true, time)
+	refresh_token, exp, err := auth.GetRefreshToken(user)
 	if err != nil {
 		return err
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Expires:  time,
+		Expires:  exp,
 		Secure:   true,
 		HTTPOnly: true, // accessible only by http (not js)
 		Name:     "refresh_token",
@@ -115,6 +117,7 @@ func setRefreshCookie(user *models.User, c *fiber.Ctx) error {
 	return nil
 }
 
+// todo: save this to redis
 func generateState() (string, error) {
 	randomBytes := make([]byte, 32)
 	_, err := rand.Read(randomBytes)

@@ -13,7 +13,7 @@ type ValidInt interface { // Todo: rename interface
 
 func IsValidToken(cookieValue string, isRefresh bool, c ValidInt) (*models.User, error) {
 	user, err := ParseToken(cookieValue)
-	if err != nil || user.Exp < time.Now().Unix() || user.Refresh == isRefresh {
+	if err != nil || user.Exp < time.Now().Unix() || user.Refresh != isRefresh {
 		return nil, c.Redirect("/refresh-access-token") //Todo: check the route
 	}
 	if !user.IsEditor {
@@ -22,6 +22,7 @@ func IsValidToken(cookieValue string, isRefresh bool, c ValidInt) (*models.User,
 
 	savedUser, err := models.GetUserById(user.Id)
 	if err != nil || !IsCookieUpToDate(savedUser, user) {
+		return nil, err
 		return nil, c.Redirect("/refresh-access-token") //Todo: check the route
 	}
 

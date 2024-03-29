@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -9,14 +10,14 @@ import (
 )
 
 type User struct {
-	Id            int
-	Email         string
-	Name          string
-	Hd            string
-	picture       string
-	VerifiedEmail bool
-	IsAdmin       bool
-	IsEditor      bool
+	Id            int    `json:"id"`
+	Email         string `json:"email"`
+	Name          string `json:"name"`
+	Hd            string `json:"hd"`
+	Picture       string `json:"picture"`
+	VerifiedEmail bool   `json:"verified_email"`
+	IsAdmin       bool   `json:"is_admin"`
+	IsEditor      bool   `json:"is_editor"`
 }
 
 func NewUser(email string, name string, hd string, picture string, verifiedEmail bool) *User {
@@ -25,7 +26,7 @@ func NewUser(email string, name string, hd string, picture string, verifiedEmail
 		Email:         email,
 		Name:          name,
 		Hd:            hd,
-		picture:       picture,
+		Picture:       picture,
 		VerifiedEmail: verifiedEmail}
 }
 
@@ -36,9 +37,9 @@ func (u User) Save() error {
 
 	res, err := database.DB.Exec(`
 		INSERT INTO Users
-		(Email, Name, Hd, VerifiedEmail)
+		(Email, Name, Hd, VerifiedEmail, IsAdmin, IsEditor)
 		VALUES
-		(($1), ($2), ($3), ($4));`, u.Email, u.Name, u.Hd, u.VerifiedEmail)
+		(($1), ($2), ($3), ($4), ($5), ($6));`, u.Email, u.Name, u.Hd, u.VerifiedEmail, u.IsAdmin, u.IsEditor)
 	if err != nil {
 		return err
 	}
@@ -111,6 +112,10 @@ func (u User) Delete() error {
 	return nil
 }
 
+func (i User) MarshalBinary() ([]byte, error) {
+	return json.Marshal(i)
+}
+
 func GetUserById(id int) (*User, error) {
 	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
 									FROM Users WHERE Id=$1;`, id)
@@ -128,13 +133,12 @@ func GetUserById(id int) (*User, error) {
 	if err != nil {
 		log.Panic("rotto mentre lettura azzzz")
 	}
-
 	return &result, nil
 }
 
 func GetUserByEmail(email string) (*User, error) {
 	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
-									FROM Users WHERE Email=$1;`, email)
+									FROM Users WHERE Email=($1);`, email)
 	if err != nil {
 		return nil, err
 	}

@@ -1,76 +1,40 @@
 package utils
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/json"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-var Store *session.Store
+var redisClient *redis.Client
 
 func InitStoreSess() {
-	Store = session.New()
+	// Todo: set passwd and things
+	redisClient = redis.NewClient(&redis.Options{
+		Addr:     "redis:6379", // Redis server address
+		Password: "",           // No password
+		DB:       0,            // Use default DB
+	})
 }
 
-func SetStore(key string, value interface{}, exp_time time.Duration, c *fiber.Ctx) error {
-	sess, err := Store.Get(c)
+func SetStore(key string, value any, exp_time time.Duration, c *fiber.Ctx) error {
+	return redisClient.Set(c.Context(), key, value, exp_time).Err()
+}
+
+func GetValue(key string, result interface{}, c *fiber.Ctx) error {
+	res, err := redisClient.Get(c.Context(), key).Result()
 	if err != nil {
 		return err
 	}
-	sess.SetExpiry(exp_time)
-	sess.Set(key, value)
-	return sess.Save()
+	return json.Unmarshal([]byte(res), result)
 }
 
-func GetValue(key string, c *fiber.Ctx) (interface{}, error) {
-	sess, err := Store.Get(c)
-	if err != nil {
-		return nil, err
-	}
-	return sess.Get(key), nil
-}
-
-func ResetValue(key string, c *fiber.Ctx) error {
-	sess, err := Store.Get(c)
-	if err != nil {
-		return err
-	}
-	sess.Delete(key)
-	return nil
+func ResetValue(key string, c *fiber.Ctx) (int64, error) {
+	return redisClient.Del(c.Context(), key).Result()
 }
 
 func StoreRoute(c *fiber.Ctx) error {
-	value, err := GetValue("original-route", c)
-	if err != nil {
-		return err
-	}
-	if value != nil {
-		err := SetStore("original-route", c.Route().Path, time.Minute*2, c)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// Custom encoding function for gob
-func gobEncode(val interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	if err := enc.Encode(val); err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
-// Custom decoding function for gob
-func gobDecode(data []byte, val interface{}) error {
-	dec := gob.NewDecoder(bytes.NewReader(data))
-	if err := dec.Decode(val); err != nil {
-		return err
-	}
-	return nil
+	return SetStore("original-route", c.Route().Path, time.Minute*5, c)
 }
