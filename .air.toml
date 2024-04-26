@@ -31,7 +31,10 @@ follow_symlink = true
 # This log file places in your tmp_dir.
 log = "air.log"
 # Poll files for changes instead of using fsnotify.
-poll = false
+# poll = false
+
+poll = true
+
 # Poll interval (defaults to the minimum interval of 500ms).
 poll_interval = 500 # ms
 # It's not necessary to trigger build each time file changes if it's too frequent.
@@ -47,7 +50,7 @@ rerun = false
 # Delay after each executions
 rerun_delay = 500
 # Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.
-args_bin = ["hello", "world"]
+# args_bin = ["hello", "world"]
 
 [log]
 # Show log time
