@@ -82,3 +82,36 @@ func Delete(c *fiber.Ctx) error {
 	s := models.StudentClass{IdS: ids, IdC: idc}
 	return s.Delete()
 }
+
+type ClassWithMajor struct {
+	models.Class
+	Major        string
+	CreationDate string
+}
+
+func GetStudentHistory(id int) *[]ClassWithMajor {
+	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.Name, SC.CreationDate
+									FROM studentclass AS SC INNER JOIN
+										 classes AS C ON SC.IdC = C.Id INNER JOIN
+										 majors AS M ON C.IdM = M.Id
+									WHERE IdS = $1
+									ORDER BY SC.CreationDate DESC;`, id)
+
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	defer rows.Close()
+
+	var data []ClassWithMajor
+	for rows.Next() {
+		var result ClassWithMajor
+		err := rows.Scan(&result.Id, &result.Year, &result.Section,
+			&result.ScholarYearStart, &result.Major, &result.CreationDate)
+		if err != nil {
+			log.Panic("rotto mentre lettura azzzz")
+		}
+		data = append(data, result)
+	}
+
+	return &data
+}

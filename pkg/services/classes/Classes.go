@@ -64,29 +64,11 @@ func GetAll() *[]models.Class {
 	return &data
 }
 
-func Create(c *fiber.Ctx) error {
-	fmt.Print("Class Create\n")
-
-	year, err := strconv.Atoi(c.FormValue("year"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: year incorrect")
-	}
-	section := strings.TrimSpace(c.FormValue("section"))
-	if section == "" {
-		return fmt.Errorf("[Classes] Create: section empty")
-	}
-	schoolyear, err := strconv.Atoi(c.FormValue("schoolyear"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: schoolyear incorrect")
-	}
-	idMajor, err := strconv.Atoi(c.FormValue("idmajor"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: major id incorrect")
-	}
-
+func Create(year int, section string, schoolyear int, idMajor int) error {
 	s := models.NewClass(year, section, schoolyear, idMajor)
 	return s.Save()
 }
+
 func Delete(c *fiber.Ctx) error {
 	fmt.Print("Class Delete\n")
 

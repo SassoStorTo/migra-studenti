@@ -1,0 +1,14 @@
+{{ define "com_user_row" }}
+<tr hx-swap-oob="true" id="userRow{{.User.Id}}" class="text-centre">
+    <td class="text-centre"><img src="{{.User.Picture}}" class="img-profile rounded-circle" alt="User's Photo"/></td>
+    <td>{{.User.Name}}</td>
+    <td>{{.User.Email}}</td>
+    <td>
+        {{if .User.IsEditor}} <p>Si</p> {{else}} <p>No</p> {{end}}
+    </td>   
+    <td>
+        {{if .User.IsAdmin}} <p>Si</p> {{else}} <p>No</p> {{end}}
+    </td>    
+    <td><button type="button" hx-get="/api/admin/compoent/user-row-edit?id={{.User.Id}}" hx-swap="innerHTML">Modifica</button></td>
+</tr>
+{{end}}

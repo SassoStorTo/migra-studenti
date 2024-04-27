@@ -1,0 +1,49 @@
+<div class="container mt-5">
+    <h1 class="mb-3">Aggiungi nuova classe</h1>
+    <form hx-post="/classes/create" hx-target="#response" hx-swap="outerHTML" class="row g-3">
+        <!-- Anno -->
+        <div class="col-md-6">
+            <label for="year" class="form-label">Anno:</label>
+            <select id="year" name="year" class="form-select" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+
+        <!-- Articolazioni -->
+        <div class="col-md-6">
+            <label for="idMajor" class="form-label">Articolazione:</label>
+            <select id="idMajors" name="idmajor" class="form-select" required>
+                {{range .Majors}}
+                <option value="{{.Id}}">{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+        
+        
+        <!-- Sezione -->
+        <div class="col-md-6">
+            <label for="section" class="form-label">Sezione:</label>
+            <input type="text" id="section" name="section" class="form-control" required>
+        </div>
+        
+        <!-- Scholar Year Start -->
+        <div class="col-md-6">
+            <label for="schoolyearstart" class="form-label">Scholar Year Start:</label>
+            <input type="number" id="schoolyearstart" name="schoolyearstart" class="form-control" value="{{.DefaultYear}}" required>
+        </div>
+                
+        <!-- Submit Button -->
+        <div class="col-12 mt-5"> <!-- Added mt-5 for extra margin top -->
+            <button type="submit" class="btn btn-primary">Aggiugni classe</button>
+        </div>
+    </form>
+
+    <!-- Element to display the server response -->
+    <div id="response" class="mt-3"></div>
+</div>
+
+

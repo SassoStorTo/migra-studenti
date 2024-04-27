@@ -8,6 +8,7 @@ func QueryCreate() string {
 			Email VARCHAR(150) NOT NULL UNIQUE,
 			Hd VARCHAR(100) NOT NULL,
 			VerifiedEmail BOOL NOT NULL,
+			Picture VARCHAR(500),
 			IsAdmin BOOL DEFAULT FALSE,
 			IsEditor BOOL DEFAULT FALSE
 		)`

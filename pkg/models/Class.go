@@ -136,3 +136,54 @@ func GetClassById(id int) *Class {
 
 	return &result
 }
+
+type ClassView struct {
+	Id               int
+	Year             int
+	Section          string
+	ScholarYearStart int
+	Major            string
+	NumberStudents   int
+}
+
+func GetAllClasses() []*ClassView {
+	// rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.name, COUNT(S.Name) AS NumberStudents
+	// 								FROM classes AS C INNER JOIN
+	// 									 studentclass AS SC ON C.Id = SC.IdC INNER JOIN
+	// 									 students AS S ON SC.IdS = S.Id INNER JOIN
+	// 									 majors AS M ON C.IdM = M.Id
+	// 								GROUP BY C.ScholarYearStart, C.Year, C.Section
+	// 								ORDER BY C.ScholarYearStart, C.Year, C.Section;`)
+	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.name, COUNT(S.Name) AS NumberStudents
+									FROM classes AS C INNER JOIN
+										 majors AS M ON C.IdM = M.Id LEFT JOIN
+										 studentclass AS SC ON C.Id = SC.IdC LEFT JOIN
+										 students AS S ON SC.IdS = S.Id
+									GROUP BY C.ScholarYearStart, C.Year, C.Section, C.Id, M.name
+									ORDER BY C.ScholarYearStart, C.Year, C.Section;`)
+
+	fmt.Println("Query executed")
+
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	fmt.Println("Rows closed")
+
+	var result []*ClassView
+	for rows.Next() {
+		var c ClassView
+		err = rows.Scan(&c.Id, &c.Year, &c.Section,
+			&c.ScholarYearStart, &c.Major, &c.NumberStudents)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil
+		}
+
+		result = append(result, &c)
+	}
+
+	return result
+}

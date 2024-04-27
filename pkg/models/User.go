@@ -37,9 +37,9 @@ func (u User) Save() error {
 
 	res, err := database.DB.Exec(`
 		INSERT INTO Users
-		(Email, Name, Hd, VerifiedEmail, IsAdmin, IsEditor)
+		(Email, Name, Hd, VerifiedEmail, IsAdmin, IsEditor, Picture)
 		VALUES
-		(($1), ($2), ($3), ($4), ($5), ($6));`, u.Email, u.Name, u.Hd, u.VerifiedEmail, u.IsAdmin, u.IsEditor)
+		(($1), ($2), ($3), ($4), ($5), ($6), ($7));`, u.Email, u.Name, u.Hd, u.VerifiedEmail, u.IsAdmin, u.IsEditor, u.Picture)
 	if err != nil {
 		return err
 	}
@@ -68,10 +68,11 @@ func (u User) Update() error {
 			Hd = ($4),
 			VerifiedEmail = ($5),
 			IsAdmin = ($6),
-			IsEditor = ($7)
+			IsEditor = ($7),
+			Picture = ($8)
 		WHERE Id = ($1);`, u.Id, u.Name,
 		u.Email, u.Hd, u.VerifiedEmail,
-		u.IsAdmin, u.IsEditor)
+		u.IsAdmin, u.IsEditor, u.Picture)
 	if err != nil {
 		return err
 	}
@@ -117,7 +118,7 @@ func (i User) MarshalBinary() ([]byte, error) {
 }
 
 func GetUserById(id int) (*User, error) {
-	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor, Picture
 									FROM Users WHERE Id=$1;`, id)
 	if err != nil {
 		return nil, err
@@ -129,7 +130,8 @@ func GetUserById(id int) (*User, error) {
 	}
 	var result User
 	err = rows.Scan(&result.Id, &result.Name, &result.Email,
-		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor)
+		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor,
+		&result.Picture)
 	if err != nil {
 		log.Panic("rotto mentre lettura azzzz")
 	}
@@ -137,7 +139,7 @@ func GetUserById(id int) (*User, error) {
 }
 
 func GetUserByEmail(email string) (*User, error) {
-	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor, Picture
 									FROM Users WHERE Email=($1);`, email)
 	if err != nil {
 		return nil, err
@@ -149,10 +151,34 @@ func GetUserByEmail(email string) (*User, error) {
 	}
 	var result User
 	err = rows.Scan(&result.Id, &result.Name, &result.Email,
-		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor)
+		&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor,
+		&result.Picture)
 	if err != nil {
 		log.Panic("rotto mentre lettura azzzz")
 	}
 
 	return &result, nil
+}
+
+func GetAllUsers() ([]User, error) {
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, VerifiedEmail, IsAdmin, IsEditor, Picture
+									FROM Users;`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []User
+	for rows.Next() {
+		var u User
+		err = rows.Scan(&u.Id, &u.Name, &u.Email,
+			&u.VerifiedEmail, &u.IsAdmin, &u.IsEditor,
+			&u.Picture)
+		if err != nil {
+			log.Panic("rotto mentre lettura azzzz")
+		}
+		result = append(result, u)
+	}
+
+	return result, nil
 }

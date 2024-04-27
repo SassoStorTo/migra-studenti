@@ -1,0 +1,31 @@
+<tr hx-swap-oob="true" id="userRow{{.User.Id}}" class="text-centre" >
+    <td class="text-centre"><img src="{{.User.Picture}}" class="img-profile rounded-circle" alt="User's Photo"/></td>
+    <td>{{.User.Name}}</td>
+    <td>{{.User.Email}}</td>
+    <td>
+        {{if .User.IsEditor}}
+        <button type="button" class="btn btn-danger" hx-get="/api/admin/compoent/user-row-edit-partial?id={{.User.Id}}&is-verified=0&is-admin={{if .User.IsAdmin}}1{{else}}0{{end}}">
+            Rifiuta
+        </button>
+        {{else}}
+        <button type="button" class="btn btn-success" hx-get="/api/admin/compoent/user-row-edit-partial?id={{.User.Id}}&is-verified=1&is-admin={{if .User.IsAdmin}}1{{else}}0{{end}}">
+            Approva
+        </button>
+        {{end}}
+    </td>
+    <td>
+        {{if .User.IsAdmin}}
+        <button type="button" class="btn btn-danger" hx-get="/api/admin/compoent/user-row-edit-partial?id={{.User.Id}}&is-verified={{if .User.IsEditor}}1{{else}}0{{end}}&is-admin=0">
+            Rimuovi permessi
+        </button>
+        {{else}}
+        <button type="button" class="btn btn-success" hx-get="/api/admin/compoent/user-row-edit-partial?id={{.User.Id}}&is-verified={{if .User.IsEditor}}1{{else}}0{{end}}&is-admin=1">
+            Dai permessi
+        </button>
+        {{end}}
+    </td>
+    <td>
+        <button type="button" class="btn btn-success" hx-post="/api/admin/change-status?id={{.User.Id}}&is-verified={{if .User.IsEditor}}1{{else}}0{{end}}&is-admin={{if .User.IsAdmin}}1{{else}}0{{end}}" hx-swap="outerHTML">Salva modifiche</button>
+        <button type="button" class="btn btn-danger" hx-get="/api/admin/compoent/user-row?id={{.User.Id}}" hx-swap="outerHTML">Elimina modifiche</button>
+    </td>
+</tr>

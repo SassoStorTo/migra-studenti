@@ -1,0 +1,55 @@
+<div class="container mt-5">
+    <h2>Dati dello studente</h2>
+    <div id="userDataDisplay">
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Nome: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="nome">{{.Student.Name}}</label> 
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="lastname" class="col-sm-2 col-form-label">Cognome: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="lastname">{{.Student.LastName}}</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="data" class="col-sm-2 col-form-label">Data: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="data">{{formatDate .Student.DateOfBirth}}</label>  
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12 text-right">
+                <button type="button" hx-get="/api/compoent/student-edit/{{.Student.Id}}" hx-target="#userDataDisplay" hx-swap="outerHTML" class="btn btn-primary">Modifica</button>
+            </div>
+        </div>
+    </div>
+        
+    <hr>
+
+    <h2>Storico Studente</h2>    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Articolazione</th>
+                    <th>Anno inizio</th>
+                    <th>Data di inserimento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .History}}
+                <tr>
+                    <td>{{.Year}}{{.Section}}</td>
+                    <td>{{.Major}}</td>
+                    <td>{{.ScholarYearStart}}</td>
+                    <td>{{formatDate .CreationDate}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    
+</div>

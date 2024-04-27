@@ -21,7 +21,7 @@ func QueryCreate() string {
 }
 
 func GetAll() *[]models.Majors {
-	rows, err := database.DB.Query(`SELECT (Id, Name) FROM majors;`)
+	rows, err := database.DB.Query(`SELECT Id, Name FROM majors;`)
 
 	if err != nil {
 		log.Panic(err.Error())
@@ -33,7 +33,7 @@ func GetAll() *[]models.Majors {
 		var result models.Majors
 		err := rows.Scan(&result.Id, &result.Name)
 		if err != nil {
-			log.Panic("rotto mentre lettura azzzz")
+			log.Panic(err.Error())
 		}
 		data = append(data, result)
 	}
@@ -41,26 +41,12 @@ func GetAll() *[]models.Majors {
 	return &data
 }
 
-func Create(c *fiber.Ctx) error {
-	fmt.Print("Major Create\n")
-
-	name := strings.TrimSpace(c.FormValue("name"))
-	if name == "" {
-		return fmt.Errorf("[Classes] Create: name field empty")
-	}
-
+func Create(name string) (*models.Majors, error) {
 	s := models.NewMajor(name)
-	return s.Save()
+	return &s, s.Save()
 }
 
-func Delete(c *fiber.Ctx) error {
-	fmt.Print("Major Delete\n")
-
-	id, err := strconv.Atoi(c.FormValue("id"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Delete: id field incorrect")
-	}
-
+func Delete(id int) error {
 	s := &models.Majors{Id: id}
 	return s.Delete()
 }

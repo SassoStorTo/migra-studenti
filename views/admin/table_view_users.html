@@ -1,0 +1,49 @@
+<style>
+    .img-profile.rounded-circle {
+        width: 50px;  /* Adjust the width as needed */
+        height: 50px; /* Adjust the height to maintain the aspect ratio */
+    }
+</style>
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tutti gli utenti</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th> </th> <!-- spazio per l'icona -->
+                            <th>Nome </th>
+                            <th>Email </th>
+                            <th>Verificato </th>
+                            <th>Admin </th>
+                            <th>Modifica </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Users}}
+                            <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre">
+                                <td><img src="{{.Picture}}" class="img-profile rounded-circle" alt="User's Photo"/></td>
+                                <td>{{.Name}}</td>
+                                <td>{{.Email}}</td>
+                                <td>
+                                    {{if .IsEditor}} <p>Si</p> {{else}} <p>No</p> {{end}}
+                                </td>   
+                                <td>
+                                    {{if .IsAdmin}} <p>Si</p> {{else}} <p>No</p> {{end}}
+                                </td>    
+                                <td><button type="button" hx-get="/api/admin/compoent/user-row-edit?id={{.Id}}" hx-swap="innerHTML">Modifica</button></td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
