@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"os"
 	"time"
@@ -26,6 +25,10 @@ func main() {
 
 	engine := html.New("./views", ".html")
 
+	engine.AddFunc("formatDate", func(t time.Time) string {
+		return t.Format("2006-01-02") // Returns date in YYYY-MM-DD format
+	})
+
 	app := fiber.New(fiber.Config{
 		CaseSensitive: false,
 		StrictRouting: true,
@@ -39,16 +42,17 @@ func main() {
 		panic(err)
 	}
 	defer logFile.Close()
-	multiWriter := io.MultiWriter(os.Stdout, logFile)
+	// multiWriter := io.MultiWriter(os.Stdout, logFile)
 	//Todo: add this to
 	app.Use(logger.New(logger.Config{
-		Next:          nil,
-		Done:          nil,
-		Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} | ${reqHeaders} \n",
+		Next: nil,
+		Done: nil,
+		// Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} | ${reqHeaders} \n",
+		Format:        "${status} | ${latency} | ${ip} | ${method} | ${url} | ${body} | \n ${reqHeaders} \n",
 		TimeFormat:    "02-01-2006 15:04:05",
 		TimeZone:      "Local",
 		TimeInterval:  time.Millisecond,
-		Output:        multiWriter,
+		Output:        os.Stdout,
 		DisableColors: false,
 	}))
 
