@@ -6,11 +6,11 @@ quindi si e' pregati di non commentare troppo essendo che ci sono almeno 3 logic
 
 # ULTIMATE Stack
 Backend:
-- Go (con la libreria net/http e go > 1.22.x)
-- [templ](https://templ.guide/syntax-and-usage/context/) (per la renderizzazione del codice html)
+- Go (with the new goat std library net/http e go > 1.22.x)
+- [templ](https://templ.guide/syntax-and-usage/context/) (for my juicy html, ehm... sorry **HTMX**)
 
 Db:
-- Postgress (the best relational db <3)
+- Postgress (the best relational db <3) {mogno is for mogols that are sfaticated}
 - Redis (after all why whe need percistancy???)
 
 Frontend:
@@ -19,3 +19,4 @@ Frontend:
 Development tools:
 - the little whale [docker] (but i prefer lxc for containerization) {rich wold approve, as he said "gnu is not unix"}
 - pyhon (import requests)
+- air (rebild automatically when a file is changed)
