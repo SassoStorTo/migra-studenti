@@ -26,6 +26,6 @@
     </td>
     <td>
         <button type="button" class="btn btn-success" hx-post="/api/admin/change-status?id={{.User.Id}}&is-verified={{if .User.IsEditor}}1{{else}}0{{end}}&is-admin={{if .User.IsAdmin}}1{{else}}0{{end}}" hx-swap="outerHTML">Salva modifiche</button>
-        <button type="button" class="btn btn-danger" hx-get="/api/admin/compoent/user-row?id={{.User.Id}}" hx-swap="outerHTML">Elimina modifiche</button>
+        <button type="button" class="btn btn-danger" hx-get="/api/admin/compoent/user-row?id={{.User.Id}}" hx-target="#userRow{{.User.Id}}" hx-swap="outerHTML">Elimina modifiche</button>
     </td>
 </tr>

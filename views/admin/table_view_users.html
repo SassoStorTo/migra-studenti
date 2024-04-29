@@ -28,7 +28,7 @@
                     <tbody>
                         {{range .Users}}
                             <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre">
-                                <td><img src="{{.Picture}}" class="img-profile rounded-circle" alt="User's Photo"/></td>
+                                <td class="text-centre"><img src="{{.Picture}}" class="img-profile rounded-circle" alt="User's Photo"/></td>
                                 <td>{{.Name}}</td>
                                 <td>{{.Email}}</td>
                                 <td>

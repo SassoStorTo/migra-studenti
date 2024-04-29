@@ -24,19 +24,12 @@ func QueryCreate() string {
 		);`
 }
 
-func Create(name, lastname string, dateOfBirth time.Time) error {
+func Create(name, lastname string, dateOfBirth time.Time) (*models.Student, error) {
 	s := models.NewStuent(name, lastname, dateOfBirth)
-	return s.Save()
+	return s, s.Save()
 }
 
-func Delete(c *fiber.Ctx) error {
-	fmt.Print("Student Delete\n")
-
-	id, err := strconv.Atoi(c.FormValue("id"))
-	if err != nil {
-		return err
-	}
-
+func Delete(id int) error {
 	s := models.Student{Id: id}
 	return s.Delete()
 }
@@ -205,4 +198,77 @@ func GetAssociatedClass(idClass int) *ClassStudent {
 	}
 
 	return &data
+}
+
+func GetAllByClassId(idClass int) *[]models.Student {
+	rows, err := database.DB.Query(`SELECT S.Id, S.Name, S.LastName, S.DateOfBirth
+									FROM students AS S INNER JOIN
+										 studentclass AS SC ON S.Id = SC.IdS
+									WHERE SC.IdC = ($1);`, idClass)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	data := []models.Student{}
+	for rows.Next() {
+		var result models.Student
+		err := rows.Scan(&result.Id, &result.Name, &result.LastName, &result.DateOfBirth)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil
+		}
+		data = append(data, result)
+	}
+
+	return &data
+}
+
+func GetLastStudentId() int {
+	rows, err := database.DB.Query(`SELECT Id FROM students ORDER BY Id DESC LIMIT 1`)
+	if err != nil {
+		log.Panic(err.Error())
+		return 0
+	}
+	defer rows.Close()
+
+	var id int
+	if rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Panic(err.Error())
+			return 0
+		}
+	}
+
+	return id
+}
+
+func GetCurrentMajor(studnetId int) (*models.Majors, error) { // todo: testare questa con piu' di un link a class
+	rows, err := database.DB.Query(`SELECT M.Id, M.Name, MAX(SC.CreationDate) AS CreationDate
+									FROM students AS S INNER JOIN
+										 studentclass AS SC ON S.Id = SC.IdS INNER JOIN
+										 classes AS C ON SC.IdC = C.Id INNER JOIN
+										 majors AS M ON C.IdM = M.Id
+									WHERE S.Id = ($1)
+									GROUP BY M.Id, M.Name;`, studnetId)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var major models.Majors
+
+	if rows.Next() {
+		var s time.Time
+		err := rows.Scan(&major.Id, &major.Name, &s)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil, err
+		}
+	}
+
+	return &major, nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
@@ -43,8 +42,8 @@ func GetById(id int) *models.Class { //Todo: change name - usa bene il next
 }
 
 func GetAll() *[]models.Class {
-	rows, err := database.DB.Query(`SELECT (Id, Year, Section, ScholarYearStart, IdMajor) 
-		FROM majors;`)
+	rows, err := database.DB.Query(`SELECT Id, Year, Section, ScholarYearStart, IdM
+									FROM classes;`)
 	if err != nil {
 		log.Panic(err.Error())
 	}
@@ -57,6 +56,34 @@ func GetAll() *[]models.Class {
 			&result.ScholarYearStart, &result.IdMajor)
 		if err != nil {
 			log.Panic("rotto mentre lettura azzzz")
+		}
+		data = append(data, result)
+	}
+
+	return &data
+}
+
+type ClassWithMajor struct {
+	models.Class
+	Major string
+}
+
+func GetAllWithMajors() *[]ClassWithMajor {
+	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, C.IdM, M.Name
+									FROM classes AS C INNER JOIN
+										 majors AS M ON C.IdM = M.Id;`)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	defer rows.Close()
+
+	var data []ClassWithMajor
+	for rows.Next() {
+		var result ClassWithMajor
+		err := rows.Scan(&result.Id, &result.Year, &result.Section,
+			&result.ScholarYearStart, &result.IdMajor, &result.Major)
+		if err != nil {
+			log.Panic(err.Error())
 		}
 		data = append(data, result)
 	}
@@ -81,32 +108,26 @@ func Delete(c *fiber.Ctx) error {
 	return s.Delete()
 }
 
-func Edit(c *fiber.Ctx) error {
-	fmt.Print("Class Edit\n")
+func GetByStudentID(studentId int) ClassWithMajor {
+	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, C.IdM, M.Name
+									FROM classes AS C INNER JOIN
+										 majors AS M ON C.IdM = M.Id INNER JOIN
+										 studentclass AS SC ON C.Id = SC.IdC
+									WHERE SC.IdS = ($1)
+									ORDER BY SC.CreationDate DESC
+									LIMIT 1;`, studentId)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	defer rows.Close()
 
-	id, err := strconv.Atoi(c.FormValue("id"))
+	var result ClassWithMajor
+	rows.Next()
+	err = rows.Scan(&result.Id, &result.Year, &result.Section,
+		&result.ScholarYearStart, &result.IdMajor, &result.Major)
 	if err != nil {
-		return fmt.Errorf("[Classes] Create: id field incorrect")
-	}
-
-	year, err := strconv.Atoi(c.FormValue("year"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: year incorrect")
-	}
-	section := strings.TrimSpace(c.FormValue("section"))
-	if section == "" {
-		return fmt.Errorf("[Classes] Create: section empty")
-	}
-	schoolyear, err := strconv.Atoi(c.FormValue("schoolyear"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: schoolyear incorrect")
-	}
-	idMajor, err := strconv.Atoi(c.FormValue("idmajor"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: major id incorrect")
+		log.Panic(err.Error())
 	}
 
-	s := &models.Class{Id: id, Year: year, Section: section,
-		ScholarYearStart: schoolyear, IdMajor: idMajor}
-	return s.Update()
+	return result
 }

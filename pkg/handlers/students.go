@@ -7,7 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
 	"github.com/gofiber/fiber/v2"
@@ -53,7 +55,24 @@ func AddNewStudent(c *fiber.Ctx) error {
 		return fmt.Errorf("[Students] Create: date incorrect")
 	}
 
-	err = students.Create(name, lastname, dateOfBirth)
+	classId, err := strconv.Atoi(c.FormValue("idclass"))
+	if err != nil {
+		return fmt.Errorf("[Students] Create: class id incorrect")
+	}
+
+	class := models.GetClassById(classId)
+	if class == nil {
+		return fmt.Errorf("[Students] Create: class not found")
+	}
+
+	stud := models.NewStuent(name, lastname, dateOfBirth)
+	err = stud.Save()
+	if err != nil {
+		return err
+	}
+	stud.Id = students.GetLastStudentId()
+
+	err = studentclass.Create(stud.Id, classId)
 	if err != nil {
 		return err
 	}
@@ -74,14 +93,16 @@ func GetStudentInfo(c *fiber.Ctx) error {
 		return err
 	}
 
-	sud := models.GetStudentById(id)
-	if sud == nil {
+	stud := models.GetStudentById(id)
+	if stud == nil {
 		return fmt.Errorf("student not found")
 	}
 
+	class := classes.GetByStudentID(stud.Id)
 	history := studentclass.GetStudentHistory(id)
 
-	return c.Render("students/info", fiber.Map{"Student": sud, "History": history}, "template")
+	return c.Render("students/info", fiber.Map{"Student": stud, "History": history,
+		"Class": class}, "template")
 }
 
 func GetFomrComponentEditStudent(c *fiber.Ctx) error {
@@ -91,12 +112,16 @@ func GetFomrComponentEditStudent(c *fiber.Ctx) error {
 		return err
 	}
 
-	sud := models.GetStudentById(id)
-	if sud == nil {
+	stud := models.GetStudentById(id)
+	if stud == nil {
 		return fmt.Errorf("student not found")
 	}
+	currClass := classes.GetByStudentID(stud.Id)
 
-	return c.Render("students/com_info_form", fiber.Map{"Student": sud})
+	allClasses := classes.GetAllWithMajors()
+
+	return c.Render("students/com_info_form", fiber.Map{"Student": stud,
+		"Classes": allClasses, "CurrentClass": currClass})
 }
 
 func GetFomrComponentDisplayStudent(c *fiber.Ctx) error {
@@ -106,12 +131,14 @@ func GetFomrComponentDisplayStudent(c *fiber.Ctx) error {
 		return err
 	}
 
-	sud := models.GetStudentById(id)
-	if sud == nil {
+	stud := models.GetStudentById(id)
+	if stud == nil {
 		return fmt.Errorf("student not found")
 	}
 
-	return c.Render("students/com_info_display", fiber.Map{"Student": sud})
+	class := classes.GetByStudentID(stud.Id)
+
+	return c.Render("students/com_info_display", fiber.Map{"Student": stud, "Class": class})
 }
 
 func SaveEditStudent(c *fiber.Ctx) error {
@@ -136,15 +163,72 @@ func SaveEditStudent(c *fiber.Ctx) error {
 		return fmt.Errorf("[Students] update: date incorrect")
 	}
 
-	student := models.GetStudentById(id)
+	stud := models.GetStudentById(id)
+	if stud == nil {
+		return fmt.Errorf("[Students] update: student not found")
+	}
+
+	stud.Name = name
+	stud.LastName = lastname
+	stud.DateOfBirth = dateOfBirth
+	stud.Update()
+
+	// class := classes.GetByStudentID(id)
+
+	idClassStr := c.FormValue("idclass")
+	newClassId, err := strconv.Atoi(idClassStr)
+	if err != nil {
+		return fmt.Errorf("[Students] update: id incorrect")
+	}
+
+	class := models.GetClassById(newClassId)
+	if class == nil {
+		return fmt.Errorf("[Students] update: class not found")
+	}
+
+	err = studentclass.Create(stud.Id, class.Id)
+	if err != nil {
+		return fmt.Errorf("[Students] update: " + err.Error())
+	}
+
+	classWithMajor := classes.GetByStudentID(stud.Id)
+
+	return c.Render("students/com_info_display", fiber.Map{"Student": stud, "Class": classWithMajor})
+}
+
+func DeleteStudent(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return err
 	}
 
-	student.Name = name
-	student.LastName = lastname
-	student.DateOfBirth = dateOfBirth
-	student.Update()
+	students.Delete(id)
 
-	return c.Render("students/com_info_display", fiber.Map{"Student": student})
+	c.Response().Header.Add("HX-Redirect", "/students")
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func TestQuery(c *fiber.Ctx) error {
+	// st := students.GetAllByClassId(1)
+
+	rows, err := database.DB.Query(`SELECT Section, Id FROM classes`)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	ret := ""
+
+	for rows.Next() {
+		var result models.Class
+		err := rows.Scan(&result.Section, &result.Id)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil
+		}
+		ret += fmt.Sprintf("%d %s\n", result.Id, result.Section)
+	}
+
+	return c.SendString(ret)
 }

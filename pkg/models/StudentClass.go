@@ -26,14 +26,14 @@ func (s StudentClass) Save() error {
 		return fmt.Errorf("the class does not exist")
 	}
 
-	rows, err := database.DB.Query("SELECT * FROM studentclass WHERE IdS = $1 AND IdC = $2;", s.IdS, s.IdC)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		return fmt.Errorf("the link already exist")
-	}
+	// rows, err := database.DB.Query("SELECT * FROM studentclass WHERE IdS = $1 AND IdC = $2;", s.IdS, s.IdC)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer rows.Close()
+	// if rows.Next() {
+	// 	return fmt.Errorf("the link already exist")
+	// }
 
 	res, err := database.DB.Exec(`
 		INSERT INTO StudentClass

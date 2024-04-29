@@ -20,6 +20,13 @@
             </div>
         </div>
         <div class="form-group row">
+            <label for="class" class="col-sm-2 col-form-label">Classe: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="class">{{.Class.Year}}{{.Class.Section}} ({{.Class.Major}})</label>  
+            </div>
+        </div>
+        
+        <div class="form-group row">
             <div class="col-sm-12 text-right">
                 <button type="button" hx-get="/api/compoent/student-edit/{{.Student.Id}}" hx-target="#userDataDisplay" hx-swap="outerHTML" class="btn btn-primary">Modifica</button>
             </div>
@@ -36,7 +43,7 @@
                     <th>Classe</th>
                     <th>Articolazione</th>
                     <th>Anno inizio</th>
-                    <th>Data di inserimento</th>
+                    <th>Data di inserimento (aaaa-mm-dd)</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,4 +59,10 @@
         </table>
     </div>
     
+    <div class="form-group row">
+        <div class="col-sm-12 text-right">
+            <button type="button" hx-delete="/students/delete/{{.Student.Id}}" hx-redirect="true" hx-swap="outerHTML" class="btn btn-primary">Elimina studente</button>
+        </div>
+    </div>
+
 </div>

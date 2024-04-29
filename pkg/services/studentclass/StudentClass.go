@@ -17,54 +17,14 @@ func QueryCreate() string {
 			IdS INT,
 			IdC INT, 
 			CreationDate TIMESTAMP NOT NULL,
-			PRIMARY KEY (IdS, IdC),
+			PRIMARY KEY (IdS, IdC, CreationDate),
 			FOREIGN KEY (IdS) REFERENCES Students(Id),
 			FOREIGN KEY (IdC) REFERENCES Classes(Id)
 		);`
 }
 
-func CreateTableStudentClass() { //Todo: chek if it's really used
-	_, err := database.DB.Exec(QueryCreate())
-
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-func GetAllStudentClass() *[]models.Class {
-	rows, err := database.DB.Query(`SELECT (IdS, IdC, DateCreation) FROM StudentClass;`)
-
-	if err != nil {
-		log.Panic(err.Error())
-	}
-	defer rows.Close()
-
-	var data []models.Class
-	for rows.Next() {
-		var result models.Class
-		err := rows.Scan(&result.Id, &result.Year, &result.Section)
-		if err != nil {
-			log.Panic("rotto mentre lettura azzzz")
-		}
-		data = append(data, result)
-	}
-
-	return &data
-}
-
-func Create(c *fiber.Ctx) error {
-	fmt.Print("student-class Create\n")
-
-	ids, err := strconv.Atoi(c.FormValue("ids"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: ids field incorrect")
-	}
-	idc, err := strconv.Atoi(c.FormValue("idc"))
-	if err != nil {
-		return fmt.Errorf("[Classes] Create: idc field incorrect")
-	}
-
-	s := models.NewStudentClass(ids, idc, time.Now())
+func Create(idStudent, idClass int) error {
+	s := models.NewStudentClass(idStudent, idClass, time.Now())
 	return s.Save()
 }
 func Delete(c *fiber.Ctx) error {
@@ -86,7 +46,7 @@ func Delete(c *fiber.Ctx) error {
 type ClassWithMajor struct {
 	models.Class
 	Major        string
-	CreationDate string
+	CreationDate time.Time
 }
 
 func GetStudentHistory(id int) *[]ClassWithMajor {
@@ -110,6 +70,9 @@ func GetStudentHistory(id int) *[]ClassWithMajor {
 		if err != nil {
 			log.Panic("rotto mentre lettura azzzz")
 		}
+
+		fmt.Printf("sandro: %s", result.CreationDate)
+
 		data = append(data, result)
 	}
 

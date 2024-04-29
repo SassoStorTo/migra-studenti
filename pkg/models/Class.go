@@ -162,8 +162,6 @@ func GetAllClasses() []*ClassView {
 									GROUP BY C.ScholarYearStart, C.Year, C.Section, C.Id, M.name
 									ORDER BY C.ScholarYearStart, C.Year, C.Section;`)
 
-	fmt.Println("Query executed")
-
 	if err != nil {
 		log.Panic(err.Error())
 		return nil

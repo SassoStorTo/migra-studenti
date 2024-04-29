@@ -1,0 +1,78 @@
+<div class="container mt-5">
+    <h2>Dati della classe</h2>
+    <div id="userDataDisplay">
+        <div class="form-group row">
+            <label for="year" class="col-sm-2 col-form-label">Anno: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="year">{{.Class.Year}}</label> 
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="section" class="col-sm-2 col-form-label">Sezione: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="section">{{.Class.Section}}</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="scholaryearstart" class="col-sm-2 col-form-label">Data: </label>
+            <div class="col-sm-10">
+                <label class="form-control" id="scholaryearstart">{{.Class.ScholarYearStart}}</label>  
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12 text-right">
+                <button type="button" hx-get="/api/compoent/classes-edit/{{.Class.Id}}" hx-target="#userDataDisplay" hx-swap="outerHTML" class="btn btn-primary">Modifica</button>
+            </div>
+        </div>
+        <!-- Aggiungiere major (anche in com_info_display) -->
+    </div>
+        
+    <hr>
+
+    <div class="container-fluid" id="containerStudentsList">
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Studenti della classe</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nome </th>
+                                <th>Cognome </th>
+                                <th>Anno di nascita (YYYY-MM-DD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .Students}}
+                                <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre" onclick="window.location.href = '/students/'+{{.Id}}">
+                                    <td>{{.Name}}</td>
+                                    <td>{{.LastName}}</td>
+                                    <td>{{formatDate .DateOfBirth}}</td>
+                                </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+        </div> 
+        <div class="form-group row">
+            <div class="col-sm-12 text-right">
+                <button type="button" hx-get="/api/compoent/classes-migration/{{.Class.Id}}" hx-target="#containerStudentsList" hx-swap="outerHTML" class="btn btn-primary">Migra classe</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<style>
+    #dataTable tr:hover {
+        background-color: #f2f2f2; 
+        cursor: pointer;
+    }
+</style>

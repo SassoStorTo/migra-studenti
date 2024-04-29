@@ -19,7 +19,7 @@
                     </thead>
                     <tbody>
                         {{range .Classes}}
-                            <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre">
+                            <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre" onclick="window.location.href = '/classes/'+{{.Id}}">
                                 <td>{{.Year}}</td>
                                 <td>{{.Section}}</td>
                                 <td>{{.Major}}</td>
@@ -34,3 +34,11 @@
     </div>
 </div>
 <!-- /.container-fluid -->
+
+
+<style>
+    #dataTable tr:hover {
+        background-color: #f2f2f2; 
+        cursor: pointer;
+    }
+</style>
