@@ -37,7 +37,7 @@
 
     <h2>Storico Studente</h2>    
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>Classe</th>
@@ -48,7 +48,7 @@
             </thead>
             <tbody>
                 {{range .History}}
-                <tr>
+                <tr hx-swap-oob="true" id="oldClassRow{{.Id}}" class="text-centre" onclick="window.location.href = '/classes/'+{{.Id}}">
                     <td>{{.Year}}{{.Section}}</td>
                     <td>{{.Major}}</td>
                     <td>{{.ScholarYearStart}}</td>
@@ -66,3 +66,10 @@
     </div>
 
 </div>
+
+<style>
+    #dataTable tr:hover {
+        background-color: #f2f2f2; 
+        cursor: pointer;
+    }
+</style>
