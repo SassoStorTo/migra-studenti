@@ -147,18 +147,10 @@ type ClassView struct {
 }
 
 func GetAllClasses() []*ClassView {
-	// rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.name, COUNT(S.Name) AS NumberStudents
-	// 								FROM classes AS C INNER JOIN
-	// 									 studentclass AS SC ON C.Id = SC.IdC INNER JOIN
-	// 									 students AS S ON SC.IdS = S.Id INNER JOIN
-	// 									 majors AS M ON C.IdM = M.Id
-	// 								GROUP BY C.ScholarYearStart, C.Year, C.Section
-	// 								ORDER BY C.ScholarYearStart, C.Year, C.Section;`)
-	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.name, COUNT(S.Name) AS NumberStudents
+	rows, err := database.DB.Query(`SELECT C.Id, C.Year, C.Section, C.ScholarYearStart, M.name, COUNT(SC.Name) AS NumberStudents
 									FROM classes AS C INNER JOIN
 										 majors AS M ON C.IdM = M.Id LEFT JOIN
-										 studentclass AS SC ON C.Id = SC.IdC LEFT JOIN
-										 students AS S ON SC.IdS = S.Id
+										 allactivestudentsclass AS SC ON C.Id = SC.IdC 
 									GROUP BY C.ScholarYearStart, C.Year, C.Section, C.Id, M.name
 									ORDER BY C.ScholarYearStart, C.Year, C.Section;`)
 

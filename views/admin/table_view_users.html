@@ -37,7 +37,7 @@
                                 <td>
                                     {{if .IsAdmin}} <p>Si</p> {{else}} <p>No</p> {{end}}
                                 </td>    
-                                <td><button type="button" hx-get="/api/admin/compoent/user-row-edit?id={{.Id}}" hx-swap="innerHTML">Modifica</button></td>
+                                <td><button type="button" hx-get="/api/admin/compoent/user-row-edit?id={{.Id}}" hx-swap="#userRow{{.Id}}" hx-swap="innerHTML">Modifica</button></td>
                             </tr>
                         {{end}}
                     </tbody>

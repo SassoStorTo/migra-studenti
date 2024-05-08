@@ -87,7 +87,8 @@ func GetUserEditRowPartialEdited(c *fiber.Ctx) error {
 }
 
 func GetUserRow(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.FormValue("id"))
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return fmt.Errorf("[Handlers] GetUserEdit: id field incorrect")
 	}

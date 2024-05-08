@@ -110,9 +110,8 @@ func GetAll() *[]studentClassRead {
 
 func GetAllWithClass() *[]studentClassRead {
 	rows, err := database.DB.Query(`SELECT S.Id, S.Name, S.LastName, S.DateOfBirth, C.Id AS cid, C.Year, C.Section, M.Name
-									FROM students AS S LEFT JOIN
-										 studentclass AS SC ON S.Id = SC.IdS LEFT JOIN
-										 classes AS C ON SC.IdC = C.Id LEFT JOIN
+									FROM AllActiveStudentsClass AS S LEFT JOIN
+										 classes AS C ON S.IdC = C.Id LEFT JOIN
 										 majors AS M ON C.IdM = M.Id;`)
 	if err != nil {
 		log.Panic(err.Error())
@@ -200,11 +199,35 @@ func GetAssociatedClass(idClass int) *ClassStudent {
 	return &data
 }
 
-func GetAllByClassId(idClass int) *[]models.Student {
-	rows, err := database.DB.Query(`SELECT S.Id, S.Name, S.LastName, S.DateOfBirth
-									FROM students AS S INNER JOIN
-										 studentclass AS SC ON S.Id = SC.IdS
-									WHERE SC.IdC = ($1);`, idClass)
+func GetAllActiveByClassId(idClass int) *[]models.Student {
+	rows, err := database.DB.Query(`SELECT Id, Name, LastName, DateOfBirth
+									FROM AllActiveStudentsClass
+									WHERE IdC = ($1);`, idClass)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	data := []models.Student{}
+	for rows.Next() {
+		var result models.Student
+		err := rows.Scan(&result.Id, &result.Name, &result.LastName, &result.DateOfBirth)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil
+		}
+		data = append(data, result)
+	}
+
+	return &data
+}
+
+func GetAllOldByClassId(idClass int) *[]models.Student {
+	rows, err := database.DB.Query(`SELECT O.Id, O.Name, O.LastName, O.DateOfBirth
+									FROM AllOldStudentsClass as O INNER JOIN 
+										 classes AS C ON O.IdC = C.Id
+									WHERE IdC = ($1);`, idClass)
 	if err != nil {
 		log.Panic(err.Error())
 		return nil

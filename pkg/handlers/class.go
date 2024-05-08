@@ -25,9 +25,10 @@ func GetClassInfo(c *fiber.Ctx) error {
 	}
 
 	class := models.GetClassById(id)
-	students := students.GetAllByClassId(id)
+	active_students := students.GetAllActiveByClassId(id)
+	old_students := students.GetAllOldByClassId(id)
 
-	return c.Render("classes/info", fiber.Map{"Class": class, "Students": students}, "template")
+	return c.Render("classes/info", fiber.Map{"Class": class, "Students": active_students, "Old": old_students}, "template")
 }
 
 func GetCreateClassForm(c *fiber.Ctx) error {

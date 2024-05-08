@@ -40,7 +40,27 @@ func SetupDb() {
 		log.Printf("[handlers] setup: users not found")
 		database.ExecQuery(users.QueryCreate())
 	}
+
+	database.ExecQuery(`DROP VIEW IF EXISTS AllActiveStudentsClass;`)
+	database.ExecQuery(`CREATE VIEW AllActiveStudentsClass AS
+							SELECT S.Id, S.Name, S.LastName, S.DateOfBirth, SC.IdS, SC.IdC, SC.CreationDate
+							FROM students AS S INNER JOIN
+								studentclass AS SC ON S.Id = SC.IdS
+							WHERE SC.CreationDate = (SELECT MAX(CreationDate)
+														FROM studentclass
+														WHERE IdS = S.Id);`)
+
+	database.ExecQuery(`DROP VIEW IF EXISTS AllOldStudentsClass;`)
+	database.ExecQuery(`CREATE VIEW AllOldStudentsClass AS
+							SELECT S.Id, S.Name, S.LastName, S.DateOfBirth, SC.IdS, SC.IdC, SC.CreationDate
+							FROM students AS S INNER JOIN
+								studentclass AS SC ON S.Id = SC.IdS
+							WHERE SC.CreationDate <> (SELECT MAX(CreationDate)
+														FROM studentclass
+														WHERE IdS = S.Id);`)
+
 }
+
 func SetupDbBono() {
 	if !database.ExistTable("majors") {
 		log.Printf("[handlers] setup: majors not found")

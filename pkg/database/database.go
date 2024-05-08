@@ -65,4 +65,3 @@ func FormatTimeForDb(date time.Time) string {
 		date.Year(), date.Month(), date.Day(),
 		date.Hour(), date.Minute(), date.Second())
 }
-

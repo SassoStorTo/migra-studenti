@@ -65,6 +65,36 @@
         </div>
 
     </div>
+    <div class="container-fluid" id="containerStudentsList">
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Ex studenti della classe</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nome </th>
+                                <th>Cognome </th>
+                                <th>Anno di nascita (YYYY-MM-DD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .Old}}
+                                <tr hx-swap-oob="true" id="userRow{{.Id}}" class="text-centre" onclick="window.location.href = '/students/'+{{.Id}}">
+                                    <td>{{.Name}}</td>
+                                    <td>{{.LastName}}</td>
+                                    <td>{{formatDate .DateOfBirth}}</td>
+                                </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+        </div> 
+    </div>
 
 </div>
 

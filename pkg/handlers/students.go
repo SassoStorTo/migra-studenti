@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
@@ -206,29 +205,4 @@ func DeleteStudent(c *fiber.Ctx) error {
 
 	c.Response().Header.Add("HX-Redirect", "/students")
 	return c.SendStatus(fiber.StatusOK)
-}
-
-func TestQuery(c *fiber.Ctx) error {
-	// st := students.GetAllByClassId(1)
-
-	rows, err := database.DB.Query(`SELECT Section, Id FROM classes`)
-	if err != nil {
-		log.Panic(err.Error())
-		return nil
-	}
-	defer rows.Close()
-
-	ret := ""
-
-	for rows.Next() {
-		var result models.Class
-		err := rows.Scan(&result.Section, &result.Id)
-		if err != nil {
-			log.Panic(err.Error())
-			return nil
-		}
-		ret += fmt.Sprintf("%d %s\n", result.Id, result.Section)
-	}
-
-	return c.SendString(ret)
 }

@@ -34,6 +34,7 @@ func SetUpRoutes(app *fiber.App) {
 	user.Get("/classes/create", handlers.GetCreateClassForm)
 	user.Post("/classes/create", handlers.AddNewClass)
 	user.Get("/classes/:id", handlers.GetClassInfo)
+
 	user.Put("/classes/:id", handlers.SaveEditClass)
 	api.Get("/compoent/classes-edit/:id", handlers.GetFomrComponentEditClass)
 	api.Get("/compoent/classes-display/:id", handlers.GetFomrComponentDisplayClass)
@@ -85,7 +86,7 @@ func SetUpRoutes(app *fiber.App) {
 	adminApi := user.Group("/api/admin", middlewares.IsAdmin)
 	adminApi.Get("/compoent/user-row-edit", handlers.GetUserEditRow)
 	adminApi.Get("/compoent/user-row-edit-partial", handlers.GetUserEditRowPartialEdited)
-	adminApi.Get("/compoent/user-row", handlers.GetUserRow)
+	adminApi.Get("/compoent/user-row/:id", handlers.GetUserRow)
 
 	adminApi.Post("/change-status", handlers.SetStatus)
 
