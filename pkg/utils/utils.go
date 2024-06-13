@@ -3,6 +3,7 @@ package utils
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,4 +25,14 @@ func ConvertNullStringToString(ns sql.NullString) string {
 		return ns.String // Directly return the string if it is valid.
 	}
 	return "" // Return an empty string as default, or you can customize this part.
+}
+
+func IsItemInList(value int, list []string) bool {
+	cmp := strconv.Itoa(value)
+	for _, v := range list {
+		if v == cmp {
+			return true
+		}
+	}
+	return false
 }

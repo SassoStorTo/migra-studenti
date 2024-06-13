@@ -38,6 +38,10 @@ func SetUpRoutes(app *fiber.App) {
 	user.Put("/classes/:id", handlers.SaveEditClass)
 	api.Get("/compoent/classes-edit/:id", handlers.GetFomrComponentEditClass)
 	api.Get("/compoent/classes-display/:id", handlers.GetFomrComponentDisplayClass)
+	api.Get("/compoent/classes-migration/:id", handlers.GetStudentClassMigration)
+	api.Post("/compoent/classes-migration-edit/:id", handlers.GetStudentClassMigrationEdit)
+	api.Get("/compoent/classes-display-students/:id", handlers.GetTablesStudentsOfClass)
+	api.Post("/compoent/classes-display-students-update/:id", handlers.ClassMigrationRefreshPage)
 
 	////////////////////
 

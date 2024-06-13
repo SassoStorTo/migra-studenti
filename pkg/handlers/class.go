@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -9,7 +10,9 @@ import (
 	"github.com/SassoStorTo/studenti-italici/pkg/models"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/majors"
+	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
 	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
+	"github.com/SassoStorTo/studenti-italici/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -106,7 +109,7 @@ func SaveEditClass(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
-	return c.Render("classes/com_info_form", fiber.Map{"Class": class})
+	return c.Render("classes/com_info_display", fiber.Map{"Class": class})
 }
 
 func GetFomrComponentEditClass(c *fiber.Ctx) error {
@@ -137,4 +140,102 @@ func GetFomrComponentDisplayClass(c *fiber.Ctx) error {
 	}
 
 	return c.Render("classes/com_info_display", fiber.Map{"Class": class})
+}
+
+func GetStudentClassMigration(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	active_students := students.GetAllActiveByClassId(id)
+	class := models.GetClassById(id)
+
+	return c.Render("classes/com_table_migration", fiber.Map{"Students": active_students, "Class": class})
+}
+
+func GetStudentClassMigrationEdit(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+	allowed_id := strings.Split(c.FormValue("allowed-id"), ",")
+	allowed_id = allowed_id[:len(allowed_id)-1]
+	log.Println(allowed_id)
+
+	class := models.GetClassById(id)
+	active_students := students.GetAllActiveByClassId(id)
+
+	return c.Render("classes/com_table_migration_edit", fiber.Map{"Students": active_students, "Class": class, "AllowedId": allowed_id})
+}
+
+func GetTablesStudentsOfClass(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	class := models.GetClassById(id)
+	active_students := students.GetAllActiveByClassId(id)
+	log.Println(active_students)
+
+	return c.Render("classes/com_table_students", fiber.Map{"Students": active_students, "Class": class})
+}
+
+func ClassMigrationRefreshPage(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+	allowed_id := strings.Split(c.FormValue("allowed-id"), ",")
+	allowed_id = allowed_id[:len(allowed_id)-1]
+	log.Println(allowed_id)
+
+	class := models.GetClassById(id)
+	active_students := students.GetAllActiveByClassId(id)
+
+	if class.Year >= 5 {
+		c.Response().Header.Add("HX-Redirect", "/classes/"+strconv.Itoa(id))
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	class.Year++
+	class.Id = 0
+	class.ScholarYearStart++
+	class.Save()
+
+	allCurrentClasses := classes.GetAllWithMajors()
+	previousClassId := -1
+
+	for _, curr := range *allCurrentClasses {
+		if curr.Year == class.Year-1 && curr.Section == class.Section &&
+			curr.ScholarYearStart == class.ScholarYearStart && curr.IdMajor == class.IdMajor {
+			previousClassId = curr.Id
+			break
+		}
+		if curr.Year == class.Year-1 && curr.Section == class.Section &&
+			curr.ScholarYearStart == class.ScholarYearStart+1 && curr.IdMajor == class.IdMajor {
+			previousClassId = curr.Id
+			break
+		}
+	}
+
+	if previousClassId == -1 {
+		err = classes.Create(class.Year, class.Section, class.ScholarYearStart+1, class.IdMajor)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, stud := range *active_students {
+		if !utils.IsItemInList(stud.Id, allowed_id) {
+			err = studentclass.Create(stud.Id, previousClassId)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	c.Response().Header.Add("HX-Redirect", "/classes/"+strconv.Itoa(id))
+	return c.SendStatus(fiber.StatusOK)
 }

@@ -67,3 +67,23 @@ func Edit(c *fiber.Ctx) error {
 	s := &models.Majors{Id: id, Name: name}
 	return s.Update()
 }
+
+func GetLastId() int {
+	rows, err := database.DB.Query(`SELECT Id FROM majors ORDER BY Id DESC LIMIT 1`)
+	if err != nil {
+		log.Panic(err.Error())
+		return 0
+	}
+	defer rows.Close()
+
+	var id int
+	if rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Panic(err.Error())
+			return -1
+		}
+	}
+
+	return id
+}

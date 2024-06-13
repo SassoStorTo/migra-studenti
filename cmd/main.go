@@ -15,6 +15,11 @@ import (
 )
 
 func main() {
+	// yo := "12345"
+	// for _, value := range yo {
+	// 	fmt.Printf("%d\n", value)
+	// }
+	// return
 	utils.InitStoreSess()
 	err := database.ConnectDB()
 	if err != nil {
@@ -27,6 +32,15 @@ func main() {
 
 	engine.AddFunc("formatDate", func(t time.Time) string {
 		return t.Format("2006-01-02") // Returns date in YYYY-MM-DD format
+	})
+	engine.AddFunc("isInList", utils.IsItemInList)
+	engine.AddFunc("listToString", func(list []string) string {
+		ret := ""
+		for _, v := range list {
+
+			ret += v + " ,"
+		}
+		return ret
 	})
 
 	app := fiber.New(fiber.Config{
@@ -48,7 +62,8 @@ func main() {
 		Next: nil,
 		Done: nil,
 		// Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} | ${reqHeaders} \n",
-		Format:        "${status} | ${latency} | ${ip} | ${method} | ${url} | ${body} | \n ${reqHeaders} \n",
+		// Format:        "${status} | ${latency} | ${ip} | ${method} | ${url} | ${body} | \n ${reqHeaders} \n",
+		Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} \n",
 		TimeFormat:    "02-01-2006 15:04:05",
 		TimeZone:      "Local",
 		TimeInterval:  time.Millisecond,

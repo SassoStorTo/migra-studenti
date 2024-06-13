@@ -61,9 +61,11 @@ Cose da contorllare:
 - ~~una volta implementato il link tra studente e classe allora ~~
     ~~andare a testare la tabella di pagina "http://localhost:8080/students/1"~~
 - ~~Poter modificare la classe di uno studente~~ ~~(ed anche vederla grazie)~~
-- quando si migra uno studente lo si vede 2 volte nella lista degli studenti della classe
+- ~~quando si migra uno studente lo si vede 2 volte nella lista degli studenti della classe~~
     
 - Aggiungiere un tasto per fare le migrazioni in automatico
+- Controllare che quando aggiungo uno studente faccia vedere solo le classi attive
+
 - aggiungiere un modo per eliminare le classi
 - aggiuingiere un allert prima di eliminare le cose
 - aggiungere un tasto per eliminare lo storico dello studente in '/students/:id'

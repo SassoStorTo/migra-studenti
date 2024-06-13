@@ -20,3 +20,13 @@ Development tools:
 - the little whale [docker] (but i prefer lxc for containerization) {rich wold approve, as he said "gnu is not unix"}
 - pyhon (import requests)
 - air (rebild automatically when a file is changed)
+
+## Come avviare l'applicazione
+- Creare un progetto nella console di [google cloud](https://console.cloud.google.com).
+- Andare nella sezione credenziali e creare delle credenziali per la voce `ID client OAuth 2.0`.
+- Nella voce `Origini JavaScript autorizzate` inserire l'url del sito (possibilmente con https, ma non necessario).
+    [esempio: *http://localhost:8080*]
+- Nella voce `URI di reindirizzamento autorizzati` inserire l'ur del sito (come quello sopra) + `/auth/callback`.
+    [esempio: *http://localhost:8080/auth/callback*]
+- Mettere nel file `.env` alla voce `REDIRECT_URL` il link inserito nella voce `URI di reindirizzamento autorizzati` della console di google.
+- Per avviare l'applicazione avviare docker e fare il comando `docker compose up`.

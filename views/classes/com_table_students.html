@@ -1,0 +1,34 @@
+<div class="container-fluid" id="containerStudentsList">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Studenti della classe</h6>
+        </div>
+        <div class="card-body" id="cardStudentClass">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome </th>
+                            <th>Cognome </th>
+                            <th>Anno di nascita (YYYY-MM-DD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $index, $Std := .Students}}
+                        <tr id="userRow{{.Id}}" class="text-centre" onclick="window.location.href = '/students/'+{{.Id}}">
+                                <td>{{$Std.Name}}</td>
+                                <td>{{$Std.LastName}}</td>
+                                <td>{{formatDate $Std.DateOfBirth}}</td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12 text-right">
+                    <button type="button" hx-get="/api/compoent/classes-migration/{{.Class.Id}}" hx-target="#containerStudentsList" hx-swap="outerHTML" class="btn btn-primary">Migra classe</button>
+                </div>
+            </div>
+        </div> 
+    </div> 
+</div>

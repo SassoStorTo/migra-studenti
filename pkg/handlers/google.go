@@ -23,7 +23,7 @@ var (
 		ClientID:     "906162141711-i44qvcal8epjbh38t5kc9mpbk0gvehla.apps.googleusercontent.com",
 		ClientSecret: "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",
 		RedirectURL:  "http://localhost:8080/auth/callback", // todo: move this to env
-		// RedirectURL: "http://6.tcp.eu.ngrok.io:17299/auth/callback", // todo: move this to env
+		// RedirectURL: "http://7.tcp.eu.ngrok.io:10360/auth/callback", // todo: move this to env
 		Scopes:   []string{"https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint: google.Endpoint,
 	}

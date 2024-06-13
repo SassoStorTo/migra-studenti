@@ -1,0 +1,55 @@
+<div class="container-fluid" id="containerStudentsList">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Migra studenti della classe</h6>
+        </div>
+        <div class="card-body" id="cardStudentClass">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome </th>
+                            <th>Cognome </th>
+                            <th>Anno di nascita (YYYY-MM-DD)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $index, $Std := .Students}}
+                            <tr id="userRow{{.Id}}" class="text-centre">
+                                <td>{{$Std.Name}}</td>
+                                <td>{{$Std.LastName}}</td>
+                                <td>{{formatDate $Std.DateOfBirth}}</td>
+                                <td> 
+                                    <button
+                                        class="btn btn-danger"
+                                        hx-post="/api/compoent/classes-migration-edit/{{$.Class.Id}}"
+                                        hx-vals='{"allowed-id": "{{range $idex, $value := $.Students}}{{if ne $value.Id $Std.Id}}{{$value.Id}},{{end}}{{end}}"}'
+                                        hx-target="#containerStudentsList"
+                                        hx-swap="outerHTML"
+                                        method="POST">
+                                        Non migrare
+                                    </button>
+                                </td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12 text-right">
+                    <button type="button" class="btn btn-danger" hx-get="/api/compoent/classes-display-students/{{.Class.Id}}" 
+                        hx-target="#containerStudentsList" hx-swap="outerHTML" class="btn btn-primary">
+                        Elimina migrazione
+                    </button>
+                    <button type="button" class="btn btn-success" hx-post="/api/compoent/classes-display-students-update/{{.Class.Id}}" 
+                        hx-target="#containerStudentsList" hx-swap="outerHTML" class="btn btn-primary"
+                        hx-vals='{"allowed-id": "{{range $idex, $value := $.Students}}{{$value.Id}},{{end}}"}'>
+                        Salva migrazione
+                    </button>
+                </div>
+            </div>
+        </div> 
+        
+    </div> 
+</div>

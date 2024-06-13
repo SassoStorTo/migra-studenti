@@ -81,3 +81,10 @@ func (s StudentClass) Delete() error {
 	WHERE IdC = ($1) AND IdS = ($2);`, s.IdC, s.IdS)
 	return err
 }
+
+func GeltLastId() int {
+	var id int
+	row := database.DB.QueryRow("SELECT MAX(Id) FROM studentclass;")
+	row.Scan(&id)
+	return id
+}

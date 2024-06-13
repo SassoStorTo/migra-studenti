@@ -248,7 +248,7 @@ func GetAllOldByClassId(idClass int) *[]models.Student {
 	return &data
 }
 
-func GetLastStudentId() int {
+func GetLastId() int {
 	rows, err := database.DB.Query(`SELECT Id FROM students ORDER BY Id DESC LIMIT 1`)
 	if err != nil {
 		log.Panic(err.Error())
@@ -261,21 +261,21 @@ func GetLastStudentId() int {
 		err := rows.Scan(&id)
 		if err != nil {
 			log.Panic(err.Error())
-			return 0
+			return -1
 		}
 	}
 
 	return id
 }
 
-func GetCurrentMajor(studnetId int) (*models.Majors, error) { // todo: testare questa con piu' di un link a class
+func GetCurrentMajor(studentId int) (*models.Majors, error) { // todo: testare questa con piu' di un link a class
 	rows, err := database.DB.Query(`SELECT M.Id, M.Name, MAX(SC.CreationDate) AS CreationDate
 									FROM students AS S INNER JOIN
 										 studentclass AS SC ON S.Id = SC.IdS INNER JOIN
 										 classes AS C ON SC.IdC = C.Id INNER JOIN
 										 majors AS M ON C.IdM = M.Id
 									WHERE S.Id = ($1)
-									GROUP BY M.Id, M.Name;`, studnetId)
+									GROUP BY M.Id, M.Name;`, studentId)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
@@ -295,3 +295,23 @@ func GetCurrentMajor(studnetId int) (*models.Majors, error) { // todo: testare q
 
 	return &major, nil
 }
+
+// func GetLastId() int {
+// 	rows, err := database.DB.Query(`SELECT Id FROM students ORDER BY Id DESC LIMIT 1`)
+// 	if err != nil {
+// 		log.Panic(err.Error())
+// 		return 0
+// 	}
+// 	defer rows.Close()
+
+// 	var id int
+// 	if rows.Next() {
+// 		err := rows.Scan(&id)
+// 		if err != nil {
+// 			log.Panic(err.Error())
+// 			return -1
+// 		}
+// 	}
+
+// 	return id
+// }

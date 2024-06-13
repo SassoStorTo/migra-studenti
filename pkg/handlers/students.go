@@ -69,7 +69,7 @@ func AddNewStudent(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	stud.Id = students.GetLastStudentId()
+	stud.Id = students.GetLastId()
 
 	err = studentclass.Create(stud.Id, classId)
 	if err != nil {

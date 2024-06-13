@@ -131,3 +131,23 @@ func GetByStudentID(studentId int) ClassWithMajor {
 
 	return result
 }
+
+func GetLastId() int {
+	rows, err := database.DB.Query(`SELECT Id FROM classes ORDER BY Id DESC LIMIT 1`)
+	if err != nil {
+		log.Panic(err.Error())
+		return 0
+	}
+	defer rows.Close()
+
+	var id int
+	if rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Panic(err.Error())
+			return -1
+		}
+	}
+
+	return id
+}
