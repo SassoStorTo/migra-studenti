@@ -30,8 +30,6 @@ func ConnectDB() error {
 		return fmt.Errorf("error connecting to database: %v", err) // change with log.panicf
 	}
 
-	fmt.Println("il ping e' andato in buca")
-
 	DB = db
 	fmt.Println("Connected to the database!")
 
