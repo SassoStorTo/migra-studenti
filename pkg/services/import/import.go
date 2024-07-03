@@ -46,6 +46,7 @@ func AddDataToDb(local_students *[]models.Student, local_classes *[]models.Class
 	// todo: implementare una sorta di lock (se ho voglia)
 
 	for _, m := range *local_majors {
+		m.Id = majors.GetLastId()
 		err := m.Save()
 		if err != nil {
 			return err
