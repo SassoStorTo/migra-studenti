@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"sync"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/auth"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/auth"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
@@ -20,12 +21,11 @@ import (
 
 var (
 	googleOauthConfig = &oauth2.Config{
-		ClientID:     "906162141711-i44qvcal8epjbh38t5kc9mpbk0gvehla.apps.googleusercontent.com",
-		ClientSecret: "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",
-		RedirectURL:  "http://localhost:8080/auth/callback", // todo: move this to env
-		// RedirectURL: "http://7.tcp.eu.ngrok.io:10360/auth/callback", // todo: move this to env
-		Scopes:   []string{"https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint: google.Endpoint,
+		ClientID:     os.Getenv("CLIENT_ID"),
+		ClientSecret: os.Getenv("CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("REDIRECT_URL"),
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"},
+		Endpoint:     google.Endpoint,
 	}
 	stateMutex sync.Mutex
 	states     = make(map[string]bool)

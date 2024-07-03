@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
 

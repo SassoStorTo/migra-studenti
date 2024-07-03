@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
 )
 
 type Class struct {

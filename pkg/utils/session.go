@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"os"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -17,6 +18,13 @@ func InitStoreSess() {
 		Password: "",           // No password
 		DB:       0,            // Use default DB
 	})
+}
+
+func InitSaveFolder() {
+	err := os.MkdirAll("/tmp/uploads", os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func SetStore(key string, value any, exp_time time.Duration, c *fiber.Ctx) error {

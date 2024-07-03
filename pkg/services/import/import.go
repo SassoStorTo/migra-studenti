@@ -4,14 +4,15 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/majors"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/classes"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/majors"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/students"
 )
 
 func SwapStudentId(id int, student models.Student, local_studentclass *[]models.StudentClass) {
@@ -81,11 +82,12 @@ func AddDataToDb(local_students *[]models.Student, local_classes *[]models.Class
 }
 
 func ParseFile(path string, startYear int) (*[]models.Student, *[]models.Class, *[]models.StudentClass, *[]models.Majors, error) {
+	log.Println("Parsing file")
 	fd, error := os.Open(path)
 	if error != nil {
 		fmt.Println(error)
 	}
-	fmt.Println("Successfully opened the CSV file")
+	log.Println("Successfully opened the CSV file")
 	defer fd.Close()
 
 	reader := csv.NewReader(fd)
@@ -117,12 +119,12 @@ func ParseFile(path string, startYear int) (*[]models.Student, *[]models.Class, 
 			return nil, nil, nil, nil, fmt.Errorf("il formato del file non e' corretto")
 		}
 
-		students = append(students, models.Student{Name: record[0], LastName: record[1], Id: currIdStudent})
-		currIdStudent++
-
 		if record[2] != "Frequenta" {
 			continue
 		}
+
+		students = append(students, models.Student{Name: record[0], LastName: record[1], Id: currIdStudent})
+		currIdStudent++
 
 		classInfo := strings.Split(record[3], " ")
 		year := int(classInfo[0][0])
@@ -151,7 +153,8 @@ func ParseFile(path string, startYear int) (*[]models.Student, *[]models.Class, 
 			idxClass = len(classes) - 1
 		}
 
-		studentClasses = append(studentClasses, *models.NewStudentClass(currIdStudent-1, idxClass, time.Now())) // qua non setto l'id
+		//Todo: qua non setto l'id
+		studentClasses = append(studentClasses, *models.NewStudentClass(currIdStudent-1, idxClass, time.Now()))
 	}
 
 	return &students, &classes, &studentClasses, &majors, nil

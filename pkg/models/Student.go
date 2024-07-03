@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
 )
 
 type Student struct {
@@ -129,5 +129,3 @@ func GetStudentById(id int) *Student {
 
 	return &result
 }
-
-

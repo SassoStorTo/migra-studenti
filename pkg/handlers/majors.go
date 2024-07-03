@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/services/majors"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/majors"
 	"github.com/gofiber/fiber/v2"
 )
 

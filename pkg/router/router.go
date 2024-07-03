@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/SassoStorTo/studenti-italici/pkg/handlers"
-	"github.com/SassoStorTo/studenti-italici/pkg/middlewares"
+	"github.com/SassoStorTo/migra-studenti/pkg/handlers"
+	"github.com/SassoStorTo/migra-studenti/pkg/middlewares"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,6 +33,12 @@ func SetUpRoutes(app *fiber.App) {
 	user.Get("/classes", handlers.GetAllClasses)
 	user.Get("/classes/create", handlers.GetCreateClassForm)
 	user.Post("/classes/create", handlers.AddNewClass)
+
+	user.Post("/upload", handlers.UploadFile)
+	user.Get("/upload", func(c *fiber.Ctx) error {
+		return c.Render("classes/marko_gay", fiber.Map{}, "template")
+	})
+
 	user.Get("/classes/:id", handlers.GetClassInfo)
 
 	user.Put("/classes/:id", handlers.SaveEditClass)

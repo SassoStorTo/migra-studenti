@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/SassoStorTo/studenti-italici/pkg/services/auth"
-	"github.com/SassoStorTo/studenti-italici/pkg/utils"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/auth"
+	"github.com/SassoStorTo/migra-studenti/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 

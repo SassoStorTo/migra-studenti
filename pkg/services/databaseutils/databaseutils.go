@@ -3,13 +3,13 @@ package dbutils
 import (
 	"log"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/majors"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/users"
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/classes"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/majors"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/studentclass"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/students"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/users"
 )
 
 func SetupDb() {

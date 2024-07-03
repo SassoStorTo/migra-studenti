@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload with HTMX and Fiber</title>
+    <script src="https://unpkg.com/htmx.org@1.6.1/dist/htmx.min.js"></script>
+</head>
+<body>
+    <h1>Upload a File</h1>
+    <form hx-post="/upload" hx-encoding="multipart/form-data" hx-trigger="submit" hx-target="#response">
+        <input type="file" id="fileInput" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="response"></div>
+</body>
+</html>

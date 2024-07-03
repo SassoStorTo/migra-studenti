@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  studenti-italici:
+  migra-studenti:
     build: .
     env_file:
       - .env
@@ -9,24 +9,23 @@ services:
       - "8080:8080"
     volumes:
       - .:/usr/src/app
-    # command: air ./cmd/main.go -b 0.0.0.0
     command: go run ./cmd/main.go -b 0.0.0.0
     depends_on:
       - redis
       - studenti-db
   studenti-db:
-    # image: postgres:alpine
-    image: postgres
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+    image: postgres:alpine
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - postgres-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
   redis:
-    image: redis:latest
+    image: redis:alpine
     container_name: redis
     ports:
       - "6379:6379"

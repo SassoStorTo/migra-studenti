@@ -5,22 +5,18 @@ import (
 	"os"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/database"
-	"github.com/SassoStorTo/studenti-italici/pkg/router"
-	dbutils "github.com/SassoStorTo/studenti-italici/pkg/services/databaseutils"
-	"github.com/SassoStorTo/studenti-italici/pkg/utils"
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/router"
+	dbutils "github.com/SassoStorTo/migra-studenti/pkg/services/databaseutils"
+	"github.com/SassoStorTo/migra-studenti/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
-	// yo := "12345"
-	// for _, value := range yo {
-	// 	fmt.Printf("%d\n", value)
-	// }
-	// return
 	utils.InitStoreSess()
+	utils.InitSaveFolder()
 	err := database.ConnectDB()
 	if err != nil {
 		log.Panic(err)
@@ -34,6 +30,7 @@ func main() {
 		return t.Format("2006-01-02") // Returns date in YYYY-MM-DD format
 	})
 	engine.AddFunc("isInList", utils.IsItemInList)
+	// todo: add this fuction to utils
 	engine.AddFunc("listToString", func(list []string) string {
 		ret := ""
 		for _, v := range list {
@@ -51,23 +48,31 @@ func main() {
 		// ViewsLayout:   "frontends/mypages/template",
 	})
 
-	logFile, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer logFile.Close()
-	// multiWriter := io.MultiWriter(os.Stdout, logFile)
+	// todo: Move this to configs
+	// multiWriter := io.MultiWriter(os.Stdout)
+	// if os.Getenv("LOG_FILE") == "TRUE" {
+	// 	log.Println("Logging to file")
+	// 	logFile, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	defer logFile.Close()
+	// 	multiWriter = io.MultiWriter(multiWriter, logFile)
+	// 	log.SetOutput(multiWriter)
+	// }
+
 	//Todo: add this to
 	app.Use(logger.New(logger.Config{
 		Next: nil,
 		Done: nil,
 		// Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} | ${reqHeaders} \n",
 		// Format:        "${status} | ${latency} | ${ip} | ${method} | ${url} | ${body} | \n ${reqHeaders} \n",
-		Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} \n",
+		// Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} | ${body} \n",
+		Format:        "${date} ${time} | ${status} | ${latency} | ${ip} | ${method} | ${url} | ${error} \n",
 		TimeFormat:    "02-01-2006 15:04:05",
 		TimeZone:      "Local",
 		TimeInterval:  time.Millisecond,
-		Output:        os.Stdout,
+		Output:        os.Stdout, // todo: change this to multiWriter
 		DisableColors: false,
 	}))
 

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/classes"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/studentclass"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/students"
 	"github.com/gofiber/fiber/v2"
 )
 

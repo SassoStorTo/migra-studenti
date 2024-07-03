@@ -1,9 +1,10 @@
 package auth
 
 import (
+	"os"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -22,7 +23,6 @@ func IsValidToken(cookieValue string, isRefresh bool, c ValidInt) (*models.User,
 
 	savedUser, err := models.GetUserById(user.Id)
 	if err != nil || !IsCookieUpToDate(savedUser, user) {
-		return nil, err
 		return nil, c.Redirect("/refresh-access-token") //Todo: check the route
 	}
 
@@ -62,14 +62,15 @@ type UserClaims struct {
 func NewToken(id int, isAdmin bool, isEditor bool, refresh bool, exp_time time.Time) (string, error) {
 	claims := UserClaims{id, isAdmin, isEditor, refresh, exp_time.Unix(), jwt.RegisteredClaims{}}
 	unsigend_token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// token, err := unsigend_token.SignedString([]byte(config.Secret)) //todo: set a proper secret
-	return unsigend_token.SignedString([]byte("segreto"))
+	secret := os.Getenv("SECRET")
+	return unsigend_token.SignedString([]byte(secret))
 }
 
 func ParseToken(accessToken string) (*UserClaims, error) {
 	claims := &UserClaims{}
+	secret := os.Getenv("SECRET")
 	_, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("segreto"), nil // Todo: change the way of getting the secret
+		return []byte(secret), nil
 	})
 	return claims, err
 }

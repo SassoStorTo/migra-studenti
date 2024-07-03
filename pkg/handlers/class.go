@@ -3,18 +3,49 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/SassoStorTo/studenti-italici/pkg/models"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/classes"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/majors"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/studentclass"
-	"github.com/SassoStorTo/studenti-italici/pkg/services/students"
-	"github.com/SassoStorTo/studenti-italici/pkg/utils"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/classes"
+	impo_service "github.com/SassoStorTo/migra-studenti/pkg/services/import"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/majors"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/studentclass"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/students"
+	"github.com/SassoStorTo/migra-studenti/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
+
+func UploadFile(c *fiber.Ctx) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(400).SendString("File upload error")
+	}
+
+	file_path := "/tmp/uploads/" + file.Filename
+
+	// Save the file to the server
+	err = c.SaveFile(file, file_path)
+	if err != nil {
+		return c.Status(500).SendString("Could not save file")
+	}
+
+	studs, cls, sccls, majors, err := impo_service.ParseFile("/tmp/uploads/"+file.Filename, time.Now().Year())
+	// _, _, _, _, err = impo_service.ParseFile(file_path, time.Now().Year())
+	os.Remove(file_path)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	err = impo_service.AddDataToDb(studs, cls, sccls, majors)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	return c.SendString("File uploaded successfully")
+}
 
 func GetAllClasses(c *fiber.Ctx) error {
 	classes := models.GetAllClasses()

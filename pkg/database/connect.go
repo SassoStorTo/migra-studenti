@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 
-	"github.com/go-ini/ini"
 	_ "github.com/lib/pq"
 )
 
@@ -14,42 +15,21 @@ func ConnectDB() error {
 		return errors.New("connection has already been established")
 	}
 
-	// username, password, database, host, err := getCredentialsFromConfig("configs/database.conf")
-	// port := 4532
-
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "studenti-db", 5432, "paolomagnani", "p", "italico")
-	// connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, username, password, database)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return fmt.Errorf("error opening connection to database: %v", err)
+		log.Panicf("error opening connection to database: %v\n", err)
 	}
 
 	if err = db.Ping(); err != nil {
 		db.Close()
-		return fmt.Errorf("error connecting to database: %v", err) // change with log.panicf
+		log.Panicf("error connecting to database: %v\n", err)
 	}
 
 	DB = db
 	fmt.Println("Connected to the database!")
 
 	return nil
-}
-
-func getCredentialsFromConfig(path string) (string, string, string, string, error) {
-	cfg, err := ini.Load(path)
-	if err != nil {
-		return "", "", "", "", fmt.Errorf("failed to read config file: %v", err)
-	}
-
-	postgresSection, err := cfg.GetSection("PostgreSQL")
-	if err != nil {
-		return "", "", "", "", fmt.Errorf("PostgreSQL section not found in config: %v", err)
-	}
-
-	return postgresSection.Key("username").String(),
-		postgresSection.Key("password").String(),
-		postgresSection.Key("database").String(),
-		postgresSection.Key("host").String(),
-		nil
 }
