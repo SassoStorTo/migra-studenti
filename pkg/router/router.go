@@ -4,6 +4,7 @@ import (
 	"github.com/SassoStorTo/migra-studenti/pkg/handlers"
 	"github.com/SassoStorTo/migra-studenti/pkg/middlewares"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type PageData struct {
@@ -37,6 +38,13 @@ func SetUpRoutes(app *fiber.App) {
 	user.Post("/upload", handlers.UploadFile)
 	user.Get("/upload", func(c *fiber.Ctx) error {
 		return c.Render("classes/upload", fiber.Map{}, "template")
+	})
+	user.Get("/download", func(c *fiber.Ctx) error {
+		uuid := uuid.New().String()
+		filePath := "/tmp/exports/export-" + uuid + ".csv"
+		//todo: export
+		c.Set("Content-Disposition", "attachment; filename="+filePath)
+		return c.SendFile(filePath)
 	})
 
 	user.Get("/classes/:id", handlers.GetClassInfo)

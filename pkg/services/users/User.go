@@ -33,7 +33,7 @@ func GetAll() *[]models.User {
 	for rows.Next() {
 		var result models.User
 		err := rows.Scan(&result.Id, &result.Name, &result.Email, &result.Hd,
-			&result.VerifiedEmail, &result.Picture, &result.IsAdmin, &result.IsEditor)
+			&result.VerifiedEmail, &result.IsAdmin, &result.IsEditor)
 		if err != nil {
 			log.Panic(err.Error())
 			return nil
