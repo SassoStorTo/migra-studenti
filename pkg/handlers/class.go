@@ -208,7 +208,7 @@ func GetTablesStudentsOfClass(c *fiber.Ctx) error {
 }
 
 func ClassMigrationRefreshPage(c *fiber.Ctx) error {
-	return c.Status(400).SendString("unhandeled redis exception")
+	// return c.Status(400).SendString("unhandeled redis exception")
 	//the class does not exists
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {

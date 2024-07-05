@@ -47,7 +47,7 @@ func ParseFile(path string, startYear int) error {
 			return fmt.Errorf("il formato del file non e' corretto")
 		}
 
-		if len(record) != 4 {
+		if len(record) != 3 {
 			return fmt.Errorf("il formato del file non e' corretto, numero di campi errato")
 		}
 

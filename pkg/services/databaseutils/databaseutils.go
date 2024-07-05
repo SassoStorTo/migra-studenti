@@ -16,9 +16,9 @@ func SetupDb() {
 	if !database.ExistTable("majors") {
 		log.Printf("[handlers] setup: majors not found")
 		database.ExecQuery(majors.QueryCreate())
-		models.NewMajor("Informatica").Save()
-		models.NewMajor("Biotecnologie Ambientali").Save()
-		models.NewMajor("Automazione").Save()
+		// models.NewMajor("Informatica").Save()
+		// models.NewMajor("Biotecnologie Ambientali").Save()
+		// models.NewMajor("Automazione").Save()
 	}
 
 	if !database.ExistTable("classes") {
