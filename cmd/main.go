@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	dbutils.Reset()
+	// dbutils.Reset()
 	dbutils.SetupDb()
 
 	engine := html.New("./views", ".html")

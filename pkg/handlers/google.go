@@ -13,6 +13,7 @@ import (
 
 	"github.com/SassoStorTo/migra-studenti/pkg/models"
 	"github.com/SassoStorTo/migra-studenti/pkg/services/auth"
+	"github.com/SassoStorTo/migra-studenti/pkg/services/users"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
@@ -76,16 +77,21 @@ func HandleCallback(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	user := models.NewUser(userData["email"].(string), userData["name"].(string),
+	usr := models.NewUser(userData["email"].(string), userData["name"].(string),
 		userData["hd"].(string), userData["picture"].(string),
 		userData["verified_email"].(bool))
 
-	user.IsEditor = true
-	user.IsAdmin = true
+	usr.IsEditor = false
+	usr.IsAdmin = false
 
-	err = user.Save()
+	if len(*users.GetAll()) == 0 {
+		usr.IsEditor = true
+		usr.IsAdmin = true
+	}
 
-	if e := setRefreshCookie(user, c); e != nil {
+	err = usr.Save()
+
+	if e := setRefreshCookie(usr, c); e != nil {
 		return e
 	}
 

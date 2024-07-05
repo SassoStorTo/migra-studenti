@@ -36,7 +36,7 @@ func SetUpRoutes(app *fiber.App) {
 
 	user.Post("/upload", handlers.UploadFile)
 	user.Get("/upload", func(c *fiber.Ctx) error {
-		return c.Render("classes/marko_gay", fiber.Map{}, "template")
+		return c.Render("classes/upload", fiber.Map{}, "template")
 	})
 
 	user.Get("/classes/:id", handlers.GetClassInfo)

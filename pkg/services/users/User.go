@@ -1,5 +1,12 @@
 package users
 
+import (
+	"log"
+
+	"github.com/SassoStorTo/migra-studenti/pkg/database"
+	"github.com/SassoStorTo/migra-studenti/pkg/models"
+)
+
 func QueryCreate() string {
 	return `
 		CREATE TABLE IF NOT EXISTS Users (
@@ -12,4 +19,27 @@ func QueryCreate() string {
 			IsAdmin BOOL DEFAULT FALSE,
 			IsEditor BOOL DEFAULT FALSE
 		)`
+}
+
+func GetAll() *[]models.User {
+	rows, err := database.DB.Query(`SELECT Id, Name, Email, Hd, VerifiedEmail, IsAdmin, IsEditor FROM Users;`)
+	if err != nil {
+		log.Panic(err.Error())
+		return nil
+	}
+	defer rows.Close()
+
+	data := []models.User{}
+	for rows.Next() {
+		var result models.User
+		err := rows.Scan(&result.Id, &result.Name, &result.Email, &result.Hd,
+			&result.VerifiedEmail, &result.Picture, &result.IsAdmin, &result.IsEditor)
+		if err != nil {
+			log.Panic(err.Error())
+			return nil
+		}
+		data = append(data, result)
+	}
+
+	return &data
 }
