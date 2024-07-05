@@ -47,11 +47,15 @@ func ParseFile(path string, startYear int) error {
 			return fmt.Errorf("il formato del file non e' corretto")
 		}
 
-		if len(record) != 3 {
+		if len(record) != 4 {
 			return fmt.Errorf("il formato del file non e' corretto, numero di campi errato")
 		}
 
-		student := models.Student{Name: record[0], LastName: record[1], Id: currIdStudent}
+		dateOfBirth, err := time.Parse("02/01/2006", record[3])
+		if err != nil {
+			return fmt.Errorf("il formato del file non e' corretto, data di nascita non valida")
+		}
+		student := models.Student{Name: record[0], LastName: record[1], Id: currIdStudent, DateOfBirth: dateOfBirth}
 		student.Save()
 		currIdStudent++
 
