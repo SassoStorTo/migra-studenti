@@ -35,7 +35,6 @@ func ParseFile(path string, startYear int) error {
 
 	for {
 		record, err := reader.Read()
-		// log.Println(record)
 		if err != nil {
 			if err == csv.ErrFieldCount {
 				fmt.Println("Il formato del file non e' corretto!")
@@ -62,13 +61,7 @@ func ParseFile(path string, startYear int) error {
 			return fmt.Errorf("il formato del file non e' corretto, Anno errato")
 		}
 
-		// log.Printf("ANNO CLASSE [%d] \n", year)
-
 		section := classInfo[0][1:]
-
-		// log.Printf("SEZIONE CLASSE OLD [%s] \n", classInfo[0])
-		// log.Printf("SEZIONE CLASSE [%s] \n", section)
-
 		major := classInfo[1]
 
 		idxMajor := searchMajor(major, mjrs)
