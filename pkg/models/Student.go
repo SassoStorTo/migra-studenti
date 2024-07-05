@@ -25,9 +25,9 @@ func NewStuent(name string, lastname string, dateofbirth time.Time) *Student {
 }
 
 func (s Student) Save() error {
-	if s.Id != -1 {
-		return errors.New("[Student] Save: for saveing in the db the Id must be empty")
-	}
+	// if s.Id != -1 {
+	// 	return errors.New("[Student] Save: for saveing in the db the Id must be empty")
+	// }
 
 	res, err := database.DB.Exec(`
 		INSERT INTO Students

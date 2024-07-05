@@ -32,14 +32,8 @@ func UploadFile(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Could not save file")
 	}
 
-	studs, cls, sccls, majors, err := impo_service.ParseFile("/tmp/uploads/"+file.Filename, time.Now().Year())
-	// _, _, _, _, err = impo_service.ParseFile(file_path, time.Now().Year())
+	err = impo_service.ParseFile(file_path, time.Now().Year())
 	os.Remove(file_path)
-	if err != nil {
-		return c.Status(500).SendString(err.Error())
-	}
-
-	err = impo_service.AddDataToDb(studs, cls, sccls, majors)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}

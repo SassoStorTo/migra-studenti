@@ -17,9 +17,9 @@ func NewMajor(name string) Majors {
 }
 
 func (m Majors) Save() error {
-	if m.Id != -1 {
-		return errors.New("[Major] Save: for saveing in the db the Id must be empty")
-	}
+	// if m.Id != -1 {
+	// 	return errors.New("[Major] Save: for saveing in the db the Id must be empty")
+	// }
 
 	res, err := database.DB.Exec(`
 		INSERT INTO majors

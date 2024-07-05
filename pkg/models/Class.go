@@ -26,9 +26,9 @@ func NewClass(year int, section string, scholarYearStart int, idm int) *Class {
 }
 
 func (c Class) Save() error {
-	if c.Id != -1 {
-		return errors.New("[Class] Save: for saveing in the db the Id must be empty")
-	}
+	// if c.Id != -1 {
+	// 	return errors.New("[Class] Save: for saveing in the db the Id must be empty")
+	// }
 
 	res, err := database.DB.Exec(`
 		INSERT INTO classes

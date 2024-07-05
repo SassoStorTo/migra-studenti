@@ -26,8 +26,8 @@ import (
 //	}
 
 func GetTablesStudents(c *fiber.Ctx) error {
-	allStudent := students.GetAllWithClass()
-	// allStudent := students.GetAll()
+	// allStudent := students.GetAllWithClass()
+	allStudent := students.GetAll()
 
 	if len(*allStudent) == 0 {
 		log.Print("No students")
