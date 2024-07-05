@@ -15,64 +15,6 @@ import (
 	"github.com/SassoStorTo/migra-studenti/pkg/services/students"
 )
 
-// func SwapStudentId(id int, student models.Student, local_studentclass *[]models.StudentClass) {
-// 	for _, e := range *local_studentclass {
-// 		if student.Id == e.IdS {
-// 			e.IdS = id
-// 		}
-// 	}
-// 	student.Id = id
-// }
-// func SwapClassId(id int, class models.Class, local_studentclass *[]models.StudentClass) {
-// 	for _, e := range *local_studentclass {
-// 		if class.Id == e.IdC {
-// 			e.IdS = id
-// 		}
-// 	}
-// 	class.Id = id
-// }
-// func SwapMajorId(id int, major models.Majors, local_classes *[]models.Class) {
-// 	for _, c := range *local_classes {
-// 		if major.Id == c.IdMajor {
-// 			c.IdMajor = id
-// 		}
-// 	}
-// 	major.Id = id
-// }
-// func AddDataToDb(local_students *[]models.Student, local_classes *[]models.Class, local_studentClasses *[]models.StudentClass, local_majors *[]models.Majors) error {
-// 	// todo: implementare una sorta di lock (se ho voglia)
-// 	for _, m := range *local_majors {
-// 		m.Id = majors.GetLastId()
-// 		err := m.Save()
-// 		if err != nil {
-// 			return err
-// 		}
-// 		SwapMajorId(majors.GetLastId(), m, local_classes)
-// 	}
-// 	for _, s := range *local_students {
-// 		err := s.Save()
-// 		if err != nil {
-// 			return err
-// 		}
-// 		SwapStudentId(students.GetLastId(), s, local_studentClasses)
-// 	}
-// 	for _, c := range *local_classes {
-// 		err := c.Save()
-// 		if err != nil {
-// 			return err
-// 		}
-// 		SwapClassId(classes.GetLastId(), c, local_studentClasses)
-// 	}
-// 	// finisci questo ????
-// 	for _, sc := range *local_studentClasses {
-// 		err := sc.Save()
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-// 	return nil
-// }
-
 func ParseFile(path string, startYear int) error {
 	log.Println("Parsing file")
 	fd, error := os.Open(path)
@@ -84,9 +26,7 @@ func ParseFile(path string, startYear int) error {
 
 	reader := csv.NewReader(fd)
 	reader.Comma = ','
-	// studs := make([]models.Student, 1)
 	clss := classes.GetAll()
-	// studClss := make([]models.StudentClass, 1)
 	mjrs := majors.GetAll()
 
 	currIdStudent := students.GetLastId() + 1
@@ -114,7 +54,6 @@ func ParseFile(path string, startYear int) error {
 
 		student := models.Student{Name: record[0], LastName: record[1], Id: currIdStudent}
 		student.Save()
-		// studs = append(studs, student)
 		currIdStudent++
 
 		classInfo := strings.Split(record[2], " ")
@@ -125,7 +64,11 @@ func ParseFile(path string, startYear int) error {
 
 		log.Printf("ANNO CLASSE [%d] \n", year)
 
-		section := classInfo[0][:1]
+		section := classInfo[0][1:]
+
+		log.Printf("SEZIONE CLASSE OLD [%s] \n", classInfo[0])
+		log.Printf("SEZIONE CLASSE [%s] \n", section)
+
 		major := classInfo[1]
 
 		idxMajor := searchMajor(major, mjrs)
@@ -152,7 +95,6 @@ func ParseFile(path string, startYear int) error {
 
 		studCls := *models.NewStudentClass(currIdStudent-1, (*clss)[idxClass].Id, time.Now())
 		studCls.Save()
-		// studClss = append(studClss, studCls)
 	}
 
 	return nil
@@ -167,7 +109,7 @@ func searchClassFromStirng(year int, section string, idxMajor int, classes *[]mo
 	return -1, nil
 }
 
-func getMajorFormIdMajor(id int, majors *[]models.Majors) string { // Todo: ricordare di aggiungere gli id algi oggetti quando li dichiaro
+func getMajorFormIdMajor(id int, majors *[]models.Majors) string {
 	for _, m := range *majors {
 		if m.Id == id {
 			return m.Name
