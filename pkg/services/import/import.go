@@ -25,7 +25,7 @@ func ParseFile(path string, startYear int) error {
 	defer fd.Close()
 
 	reader := csv.NewReader(fd)
-	reader.Comma = ','
+	reader.Comma = ';'
 	clss := classes.GetAll()
 	mjrs := majors.GetAll()
 
@@ -53,7 +53,7 @@ func ParseFile(path string, startYear int) error {
 		}
 
 		if len(record) != 4 {
-			return fmt.Errorf("il formato del file non e' corretto, numero di campi errato")
+			return fmt.Errorf("il formato del file non e' corretto, numero di campi errato %d", len(record))
 		}
 
 		dateOfBirth, err := time.Parse("02/01/2006", record[3])
