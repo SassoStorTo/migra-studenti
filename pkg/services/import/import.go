@@ -25,7 +25,7 @@ func ParseFile(path string, startYear int) error {
 	defer fd.Close()
 
 	reader := csv.NewReader(fd)
-	reader.Comma = ';'
+	reader.Comma = ','
 	clss := classes.GetAll()
 	mjrs := majors.GetAll()
 
