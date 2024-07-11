@@ -33,6 +33,11 @@ func ParseFile(path string, startYear int) error {
 	currIdClass := classes.GetLastId() + 1
 	currIdMajor := majors.GetLastId() + 1
 
+	_, err := reader.Read()
+	if err != nil {
+		return fmt.Errorf("error reading record:", err)
+	}
+
 	for {
 		record, err := reader.Read()
 		if err != nil {
@@ -47,7 +52,7 @@ func ParseFile(path string, startYear int) error {
 			return fmt.Errorf("il formato del file non e' corretto")
 		}
 
-		if len(record) != 3 {
+		if len(record) != 4 {
 			return fmt.Errorf("il formato del file non e' corretto, numero di campi errato")
 		}
 
