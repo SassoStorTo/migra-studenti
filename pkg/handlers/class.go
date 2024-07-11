@@ -35,7 +35,7 @@ func UploadFile(c *fiber.Ctx) error {
 	err = impo_service.ParseFile(file_path, time.Now().Year())
 	os.Remove(file_path)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.SendString(err.Error())
 	}
 
 	return c.SendString("File uploaded successfully")
